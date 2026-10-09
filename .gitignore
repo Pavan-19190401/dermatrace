@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local data & temp directories
+backend/data/
+backend/smoke/
+data/
+smoke/
+
+# Environment variables & secrets
+.env
+.secret
+kaggle.json
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp

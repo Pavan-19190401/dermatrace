@@ -1,0 +1,16 @@
+# HTTPS in one command:  DOMAIN=derma.example.com DT_SECRET=$(openssl rand -hex 32) docker compose up -d
+services:
+  api:
+    build: .
+    environment: [DT_SECRET, "DT_DATA=/data"]
+    volumes: ["dt-data:/data"]
+    restart: unless-stopped
+  caddy:
+    image: caddy:2
+    ports: ["80:80", "443:443"]
+    environment: [DOMAIN]
+    command: caddy reverse-proxy --from ${DOMAIN} --to api:8000
+    volumes: ["caddy:/data"]
+    depends_on: [api]
+    restart: unless-stopped
+volumes: {dt-data: {}, caddy: {}}

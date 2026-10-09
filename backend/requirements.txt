@@ -1,0 +1,7 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+numpy>=1.26
+pillow>=10
+# Optional – only needed for the deep-learning Siamese engine (see app/model.py, train.py)
+# torch>=2.2
+# torchvision>=0.17

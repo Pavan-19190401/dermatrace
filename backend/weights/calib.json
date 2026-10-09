@@ -1,0 +1,16 @@
+{
+ "thr": 0.38832485109567644,
+ "scale": 0.0224376667861466,
+ "risk_thr": 0.3999999999999999,
+ "margin": 1.0,
+ "data": "HAM10000 + synthetic evolution",
+ "labels": [
+  "akiec",
+  "bcc",
+  "bkl",
+  "df",
+  "mel",
+  "nv",
+  "vasc"
+ ]
+}

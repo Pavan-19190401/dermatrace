@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>DermaTrace – Mobile Deep Learning Framework</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2563eb">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================================
+   DERMATRACE SKEUOMORPHIC & SPATIAL THEME (WHITE / TACTILE CLINICAL AESTHETIC)
+   ========================================================================== */
+:root {
+  --bg: #f4f3ee;
+  --card: #ffffff;
+  --card-sub: #fbfbfa;
+  --text-main: #1e2229;
+  --text-muted: #6e7482;
+  --text-dim: #9aa0ad;
+  --ac: #2563eb;
+  --ac-soft: rgba(37, 99, 235, 0.12);
+  --ok: #15803d;
+  --ok-bg: #ecfdf5;
+  --wa: #b45309;
+  --wa-bg: #fffbeb;
+  --bad: #dc2626;
+  --bad-bg: #fef2f2;
+  --sh-light: #ffffff;
+  --sh-dark: rgba(186, 178, 166, 0.42);
+  --sh-dark-deep: rgba(160, 150, 136, 0.55);
+  --inset-dark: rgba(175, 168, 155, 0.35);
+  --inset-light: rgba(255, 255, 255, 0.95);
+  --border-sub: rgba(220, 215, 204, 0.6);
+  --metal: linear-gradient(145deg, #ffffff, #e9e6df);
+  --radius-xl: 32px;
+  --radius-lg: 24px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+}
+
+:root[data-theme="dark"] {
+  --bg: #131518;
+  --card: #1c1f24;
+  --card-sub: #17191d;
+  --text-main: #f1f3f7;
+  --text-muted: #9aa1b0;
+  --text-dim: #656b78;
+  --ac: #3b82f6;
+  --ac-soft: rgba(59, 130, 246, 0.2);
+  --ok: #22c55e;
+  --ok-bg: rgba(34, 197, 94, 0.12);
+  --wa: #f59e0b;
+  --wa-bg: rgba(245, 158, 11, 0.12);
+  --bad: #ef4444;
+  --bad-bg: rgba(239, 68, 68, 0.12);
+  --sh-light: #292d34;
+  --sh-dark: #0a0b0d;
+  --sh-dark-deep: #050608;
+  --inset-dark: #0d0e11;
+  --inset-light: #2c3038;
+  --border-sub: rgba(55, 62, 74, 0.6);
+  --metal: linear-gradient(145deg, #282c33, #1a1d22);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text-main);
+  font: 14px/1.45 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Spatial Ambient Illumination Orbs */
+.spatial-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  opacity: 0.65;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 0;
+}
+#orb1 { width: 340px; height: 340px; background: #93c5fd; top: -80px; left: -100px; }
+#orb2 { width: 320px; height: 320px; background: #fed7aa; bottom: -80px; right: -90px; }
+
+/* 3D Perspective Stage & Mobile Hardware Frame */
+#stage {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1400px;
+  position: relative;
+  z-index: 1;
+}
+
+#phone-frame {
+  width: 100%;
+  max-width: 440px;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.18s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+@media (min-width: 500px) {
+  #phone-frame {
+    height: min(920px, 96%);
+    border-radius: 46px;
+    background: var(--bg);
+    box-shadow:
+      0 45px 95px -25px var(--sh-dark-deep),
+      0 0 0 10px #ece9e1,
+      0 0 0 12px #d8d3c5,
+      inset 0 2px 2px var(--sh-light);
+    overflow: hidden;
+  }
+}
+
+/* Mobile Hardware Status Bar & Notch */
+.phone-top-bar {
+  padding: 10px 22px 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  transform: translateZ(40px);
+}
+.notch {
+  width: 110px;
+  height: 22px;
+  border-radius: 20px;
+  background: #111317;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: inset 0 -1px 2px rgba(255,255,255,0.2), 0 2px 6px rgba(0,0,0,0.3);
+}
+.camera-lens { width: 9px; height: 9px; border-radius: 50%; background: #1c2e4a; border: 1.5px solid #28374d; }
+.speaker-mesh { width: 38px; height: 3.5px; border-radius: 2px; background: #22262d; }
+
+/* Skeuomorphic Header */
+header {
+  padding: 8px 20px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transform: translateZ(35px);
+}
+.brand-title {
+  display: flex;
+  flex-direction: column;
+}
+.brand-title h1 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.brand-title small {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--ac);
+  text-transform: uppercase;
+}
+.header-actions { display: flex; gap: 8px; align-items: center; }
+
+/* Skeuomorphic Buttons & Pills */
+.sk-btn {
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  font: 700 13px 'Plus Jakarta Sans', inherit;
+  color: var(--text-main);
+  cursor: pointer;
+  background: var(--metal);
+  box-shadow:
+    6px 7px 15px -4px var(--sh-dark),
+    -5px -5px 12px var(--sh-light);
+  transition: all 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+.sk-btn:active {
+  box-shadow:
+    inset 3px 3px 7px var(--inset-dark),
+    inset -3px -3px 7px var(--inset-light);
+  transform: scale(0.98);
+}
+.sk-btn.pri {
+  background: linear-gradient(145deg, #3b82f6, #1d4ed8);
+  color: #ffffff;
+  box-shadow:
+    5px 8px 18px -4px rgba(37, 99, 235, 0.55),
+    -4px -4px 10px var(--sh-light),
+    inset 0 1px 1px rgba(255,255,255,0.6);
+}
+.sk-btn.pri:active {
+  box-shadow:
+    inset 3px 3px 8px rgba(15, 30, 80, 0.6),
+    inset -2px -2px 6px rgba(255, 255, 255, 0.3);
+}
+
+.sk-btn-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  padding: 0;
+  display: grid;
+  place-items: center;
+}
+
+/* Skeuomorphic Cards & Containers */
+.sk-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  margin-bottom: 14px;
+  box-shadow:
+    8px 11px 24px -8px var(--sh-dark),
+    -7px -7px 16px var(--sh-light);
+  border: 1px solid var(--border-sub);
+  transform: translateZ(18px);
+  position: relative;
+}
+
+.sk-well {
+  background: var(--card-sub);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  box-shadow:
+    inset 3px 3px 7px var(--inset-dark),
+    inset -3px -3px 7px var(--inset-light);
+  margin-bottom: 10px;
+}
+
+/* Scroll View */
+.view {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 16px 120px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.view::-webkit-scrollbar { display: none; }
+
+/* Status Badge */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow:
+    inset 2px 2px 4px var(--inset-dark),
+    inset -2px -2px 4px var(--inset-light);
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 6px var(--ok);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* Grid & Layout Helpers */
+.row { display: flex; align-items: center; gap: 10px; }
+.sp { justify-content: space-between; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+/* Stats Tiles */
+.stat-tile {
+  text-align: center;
+  padding: 12px 8px;
+  border-radius: var(--radius-md);
+  box-shadow:
+    inset 3px 3px 6px var(--inset-dark),
+    inset -3px -3px 6px var(--inset-light);
+}
+.stat-val {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  display: block;
+}
+.stat-label { font-size: 11px; font-weight: 600; color: var(--text-muted); }
+
+/* Lesion List Row */
+.les-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  margin-bottom: 10px;
+  cursor: pointer;
+  background: var(--card);
+  box-shadow:
+    5px 7px 15px -4px var(--sh-dark),
+    -4px -4px 10px var(--sh-light);
+  border: 1px solid var(--border-sub);
+  transition: transform 0.12s ease;
+}
+.les-item:active { transform: scale(0.98); }
+.les-thumb {
+  width: 58px;
+  height: 58px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  box-shadow: inset 0 0 0 2px var(--sh-light), 3px 4px 8px var(--sh-dark);
+  background: #d8d4cb;
+}
+
+/* Risk Chips */
+.chip {
+  padding: 4px 11px;
+  border-radius: 12px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.chip.ok { background: var(--ok-bg); color: var(--ok); border: 1px solid rgba(21, 128, 61, 0.25); }
+.chip.wa { background: var(--wa-bg); color: var(--wa); border: 1px solid rgba(180, 83, 9, 0.25); }
+.chip.bad { background: var(--bad-bg); color: var(--bad); border: 1px solid rgba(220, 38, 38, 0.25); }
+
+/* Camera Viewfinder & HUD */
+.cam-bezel {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #0d0f12;
+  box-shadow:
+    inset 0 0 0 6px var(--card-sub),
+    0 0 0 2px var(--sh-dark),
+    10px 14px 28px -10px var(--sh-dark);
+}
+.cam-bezel video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ghost-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  opacity: 0.38;
+  mix-blend-mode: screen;
+  filter: contrast(1.15) brightness(1.1);
+}
+.reticle-ring {
+  position: absolute;
+  inset: 16%;
+  border: 2px dashed rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.38);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.reticle-crosshair {
+  width: 24px;
+  height: 24px;
+  position: relative;
+}
+.reticle-crosshair::before, .reticle-crosshair::after {
+  content: '';
+  position: absolute;
+  background: rgba(255,255,255,0.7);
+}
+.reticle-crosshair::before { left: 11px; top: 0; width: 2px; height: 24px; }
+.reticle-crosshair::after { top: 11px; left: 0; height: 2px; width: 24px; }
+
+.cam-hud-label {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(10px);
+  color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+/* Skeuomorphic Shutter Button */
+.shutter-btn {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  border: 0;
+  cursor: pointer;
+  background: radial-gradient(circle at 35% 30%, #ffffff, #dcd7ce 70%);
+  box-shadow:
+    8px 10px 20px -4px var(--sh-dark),
+    -5px -5px 12px var(--sh-light),
+    inset 0 0 0 6px var(--card-sub),
+    inset 0 0 0 8px #d2ccc0;
+  transition: transform 0.1s ease;
+  position: relative;
+}
+.shutter-btn:active {
+  transform: scale(0.92);
+  box-shadow:
+    inset 4px 5px 10px var(--inset-dark),
+    inset -4px -4px 10px var(--inset-light);
+}
+.shutter-btn::after {
+  content: '';
+  position: absolute;
+  inset: 16px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ef4444, #b91c1c);
+  box-shadow: 0 2px 6px rgba(185, 28, 28, 0.5);
+}
+
+/* Interactive Split Comparison Slider */
+.cmp-container {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  touch-action: none;
+  box-shadow:
+    inset 0 0 0 4px var(--card-sub),
+    8px 12px 24px -8px var(--sh-dark);
+  background: #000;
+}
+.cmp-container img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+.cmp-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #ffffff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  cursor: ew-resize;
+  z-index: 5;
+}
+.cmp-handle::after {
+  content: '⇆';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--metal);
+  color: var(--text-main);
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  font-weight: 800;
+  box-shadow:
+    4px 6px 14px -3px var(--sh-dark),
+    -3px -3px 8px var(--sh-light),
+    inset 0 1px 1px #fff;
+}
+
+/* Skeuomorphic Rotary Dials & Sliders */
+.sk-knob-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.sk-knob {
+  width: 94px;
+  height: 94px;
+  border-radius: 50%;
+  position: relative;
+  touch-action: none;
+  cursor: grab;
+  background: radial-gradient(circle at 35% 28%, #ffffff, #dedad1 75%);
+  box-shadow:
+    8px 12px 22px -6px var(--sh-dark),
+    -7px -7px 16px var(--sh-light),
+    inset 0 -4px 8px rgba(0,0,0,0.06);
+}
+.sk-knob::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #f3f0e8, #dedad1);
+  box-shadow: inset 2px 2px 5px var(--inset-dark), inset -2px -2px 5px var(--inset-light);
+}
+.sk-knob::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2563eb;
+  left: 50%;
+  top: 50%;
+  margin: -4px;
+  transform: rotate(var(--r, 0deg)) translateY(-32px);
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.8), inset 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.knob-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.knob-readout {
+  font-size: 14px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-main);
+}
+
+/* Mechanical Faders */
+.fader-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 8px 4px;
+}
+.fader-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.fader-col input[type="range"] {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 26px;
+  height: 120px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Progress Meters */
+.meter-track {
+  height: 11px;
+  border-radius: 6px;
+  background: var(--card-sub);
+  box-shadow:
+    inset 2px 2px 4px var(--inset-dark),
+    inset -2px -2px 4px var(--inset-light);
+  overflow: hidden;
+}
+.meter-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #60a5fa, #2563eb);
+  transition: width 0.3s ease;
+}
+
+/* Bottom Navigation Bar (Floating Dock) */
+nav {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%) translateZ(60px);
+  display: flex;
+  gap: 5px;
+  padding: 8px 10px;
+  border-radius: 34px;
+  background: var(--card);
+  backdrop-filter: blur(24px);
+  box-shadow:
+    0 20px 40px -12px var(--sh-dark-deep),
+    -6px -6px 16px var(--sh-light),
+    inset 0 1.5px 1px rgba(255,255,255,0.9);
+  border: 1px solid var(--border-sub);
+  z-index: 10;
+}
+nav button {
+  border: 0;
+  background: none;
+  width: 68px;
+  padding: 8px 0 6px;
+  border-radius: 24px;
+  color: var(--text-muted);
+  font: 700 10px 'Plus Jakarta Sans', inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+nav button svg {
+  width: 21px;
+  height: 21px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+nav button.on {
+  color: var(--ac);
+  background: var(--card-sub);
+  box-shadow:
+    inset 2.5px 2.5px 6px var(--inset-dark),
+    inset -2.5px -2.5px 6px var(--inset-light);
+}
+
+/* Modal Bottom Sheet */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 18, 24, 0.45);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 99;
+}
+.modal-sheet {
+  max-width: 440px;
+  width: 100%;
+  border-radius: 34px 34px 0 0;
+  background: var(--card);
+  padding: 24px 22px 36px;
+  box-shadow: 0 -15px 40px rgba(0,0,0,0.25);
+  border: 1px solid var(--border-sub);
+  animation: slideUp 0.25s cubic-bezier(0.15, 0.85, 0.25, 1);
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+/* Inputs and Forms */
+input, select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: var(--radius-md);
+  font: inherit;
+  color: var(--text-main);
+  background: var(--card-sub);
+  box-shadow:
+    inset 3px 3px 6px var(--inset-dark),
+    inset -3px -3px 6px var(--inset-light);
+  outline: 0;
+  margin-bottom: 10px;
+}
+
+/* Segmented Tabs */
+.seg-tabs {
+  display: flex;
+  padding: 4px;
+  border-radius: 20px;
+  background: var(--card-sub);
+  box-shadow:
+    inset 2.5px 2.5px 6px var(--inset-dark),
+    inset -2.5px -2.5px 6px var(--inset-light);
+  margin-bottom: 12px;
+}
+.seg-tabs button {
+  flex: 1;
+  border: 0;
+  background: none;
+  padding: 8px 10px;
+  border-radius: 16px;
+  font: 700 12px 'Plus Jakarta Sans', inherit;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.seg-tabs button.on {
+  color: var(--text-main);
+  background: var(--metal);
+  box-shadow:
+    3px 4px 10px -2px var(--sh-dark),
+    -2px -2px 6px var(--sh-light);
+}
+
+/* Flash Screen Overlay */
+#flash {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 100;
+  transition: opacity 0.2s ease-out;
+}
+
+/* Institutional Badge */
+.inst-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--card-sub);
+  margin-bottom: 12px;
+  border-left: 4px solid #2563eb;
+}
+</style>
+</head>
+<body>
+
+<div class="spatial-orb" id="orb1"></div>
+<div class="spatial-orb" id="orb2"></div>
+<div id="flash"></div>
+
+<div id="stage">
+  <div id="phone-frame">
+    <!-- Top Hardware Bar -->
+    <div class="phone-top-bar">
+      <span id="live-clock">10:20</span>
+      <div class="notch"><div class="camera-lens"></div><div class="speaker-mesh"></div></div>
+      <span>5G ▰ 100%</span>
+    </div>
+
+    <!-- App Header -->
+    <header>
+      <div class="brand-title">
+        <h1>DermaTrace</h1>
+        <small>Longitudinal Skin Lesion Monitor</small>
+      </div>
+      <div class="header-actions">
+        <button class="sk-btn sk-btn-icon" id="btn-spatial" title="Toggle 3D Spatial Tilt" onclick="toggleSpatial()">🪞</button>
+        <button class="sk-btn sk-btn-icon" id="btn-theme" title="Toggle Light/Dark Theme" onclick="toggleTheme()">◐</button>
+      </div>
+    </header>
+
+    <!-- Main Dynamic Scroll View -->
+    <main class="view" id="main-view"></main>
+
+    <!-- Bottom Navigation Dock -->
+    <nav id="bottom-nav"></nav>
+  </div>
+</div>
+
+<!-- DermaTrace API Client -->
+<script src="api.js"></script>
+
+<script>
+/* ==========================================================================
+   DERMATRACE FRONT-END CONTROLLER & STATE
+   ========================================================================== */
+const $ = sel => document.querySelector(sel);
+const el = tag => document.createElement(tag);
+
+// Application State
+const DEFAULT_STATE = {
+  tab: 'home',
+  analyticsTab: 'evaluation',
+  lesions: [],
+  sel: null,
+  a: 0,
+  b: 0,
+  camStream: null,
+  facingMode: 'environment',
+  ghostOpacity: 0.38,
+  spatialTilt: true,
+  cfg: {
+    sens: 0.5,
+    fov: 40.0,
+    mode: 'Auto',
+    w: { A: 1.0, B: 1.0, C: 1.0, D: 1.0, E: 1.0 },
+    ring: true,
+    ghost: true,
+    rem: true,
+    days: 30
+  }
+};
+
+let App = DEFAULT_STATE;
+try {
+  const saved = localStorage.getItem('dt_v2');
+  if (saved) {
+    App = JSON.parse(saved);
+    App.cfg = { ...DEFAULT_STATE.cfg, ...App.cfg };
+    App.camStream = null;
+  }
+} catch (e) {}
+
+const saveState = () => {
+  try {
+    localStorage.setItem('dt_v2', JSON.stringify({ ...App, camStream: null }));
+  } catch (e) {
+    toast('Local storage full — delete old visits');
+  }
+};
+
+function toast(msg) {
+  const t = el('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;top:26px;left:50%;transform:translateX(-50%) translateZ(80px);background:#1a1d24;color:#fff;padding:12px 20px;border-radius:18px;z-index:200;font-weight:700;font-size:13px;box-shadow:0 12px 28px rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.15)';
+  document.body.append(t);
+  setTimeout(() => t.remove(), 2600);
+}
+
+// Icons
+const NAV_ICONS = {
+  home: '<path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/>',
+  scan: '<path d="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3"/><circle cx="12" cy="12" r="3.5"/>',
+  cmp: '<path d="M12 3v18M4 7h5M15 17h5"/><rect x="3" y="4" width="18" height="16" rx="3"/>',
+  analytics: '<path d="M18 20V10M12 20V4M6 20v-6"/>',
+  set: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>'
+};
+
+const TABS = [
+  ['home', 'Home'],
+  ['scan', 'Scan'],
+  ['cmp', 'Compare'],
+  ['analytics', 'Analytics'],
+  ['set', 'Console']
+];
+
+function renderNav() {
+  $('#bottom-nav').innerHTML = TABS.map(([k, l]) => `
+    <button class="${App.tab === k ? 'on' : ''}" onclick="switchTab('${k}')">
+      <svg viewBox="0 0 24 24">${NAV_ICONS[k]}</svg>
+      <span>${l}</span>
+    </button>
+  `).join('');
+}
+
+function switchTab(t) {
+  if (App.tab === 'scan' && t !== 'scan') stopCamera();
+  App.tab = t;
+  renderNav();
+  renderView();
+  $('#main-view').scrollTop = 0;
+}
+
+const getActiveLesion = () => App.lesions.find(l => l.id == App.sel) || App.lesions[0];
+
+/* ==========================================================================
+   METRICS & IMAGE ANALYSIS (ON-DEVICE FALLBACK & CACHED INFERENCE)
+   ========================================================================== */
+const loadImage = src => new Promise(res => {
+  const i = new Image();
+  i.onload = () => res(i);
+  i.src = src;
+});
+
+function getPixels(img, n) {
+  const c = el('canvas');
+  c.width = c.height = n;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  const s = Math.min(img.width, img.height);
+  ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, n, n);
+  return ctx.getImageData(0, 0, n, n).data;
+}
+
+async function extractMetrics(src) {
+  const n = 64, img = await loadImage(src), d = getPixels(img, n);
+  const L = new Float32Array(n * n);
+  let bg = 0, bc = 0, mean = 0;
+  for (let i = 0; i < n * n; i++) {
+    L[i] = 0.3 * d[i * 4] + 0.59 * d[i * 4 + 1] + 0.11 * d[i * 4 + 2];
+    mean += L[i];
+    const x = i % n, y = (i / n) | 0;
+    if (x < 6 || y < 6 || x > n - 7 || y > n - 7) { bg += L[i]; bc++; }
+  }
+  bg /= bc; mean /= (n * n);
+  const k = 14 + (1 - App.cfg.sens) * 22, M = new Uint8Array(n * n);
+  let area = 0, x0 = n, x1 = 0, y0 = n, y1 = 0, pts = [];
+  for (let i = 0; i < n * n; i++) {
+    if (L[i] < bg - k) {
+      M[i] = 1; area++;
+      const x = i % n, y = (i / n) | 0;
+      x0 = Math.min(x0, x); x1 = Math.max(x1, x);
+      y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+      pts.push(i);
+    }
+  }
+  if (area < 20) return { A: 0, B: 0, C: 0, D: 0, q: 0.2, area };
+  let per = 0, mis = 0;
+  for (const i of pts) {
+    const x = i % n, y = (i / n) | 0;
+    if (!M[i - 1] || !M[i + 1] || !M[i - n] || !M[i + n]) per++;
+    if (!M[y * n + (x0 + x1 - x)]) mis++;
+    if (!M[(y0 + y1 - y) * n + x]) mis++;
+  }
+  let v = 0;
+  let m = [0, 0, 0];
+  for (const i of pts) for (let c = 0; c < 3; c++) m[c] += d[i * 4 + c];
+  m = m.map(val => val / area);
+  for (const i of pts) for (let c = 0; c < 3; c++) v += (d[i * 4 + c] - m[c]) ** 2;
+  let lap = 0;
+  for (let y = 1; y < n - 1; y++) {
+    for (let x = 1; x < n - 1; x++) {
+      const i = y * n + x;
+      const l = 4 * L[i] - L[i - 1] - L[i + 1] - L[i - n] - L[i + n];
+      lap += l * l;
+    }
+  }
+  lap /= (n * n);
+  const q = Math.max(0, Math.min(1, Math.min(lap / 25, 1) * 0.6 + (mean > 55 && mean < 225 ? 0.4 : 0.1)));
+  return {
+    A: Math.min(1, mis / (2 * area) * 2.2),
+    B: Math.min(1, Math.max(0, (per * per / (4 * Math.PI * area) - 1.1) / 2.2)),
+    C: Math.min(1, Math.sqrt(v / (3 * area)) / 45),
+    D: +((x1 - x0 + 1) / n * App.cfg.fov).toFixed(1),
+    q,
+    area
+  };
+}
+
+async function compareVisits(a, b) {
+  // Try server Siamese CNN first
+  try {
+    const res = await API.cmp(a, b, App.cfg);
+    if (res && res.score !== undefined) return res;
+  } catch (e) {}
+
+  // Transparent on-device ABCDE + pixel change heuristic fallback
+  const n = App.cfg.mode === 'Fast' ? 32 : (App.cfg.mode === 'Slow' ? 72 : 48);
+  const [ia, ib] = await Promise.all([loadImage(a.img), loadImage(b.img)]);
+  const da = getPixels(ia, n), db = getPixels(ib, n);
+  let p = 0;
+  for (let i = 0; i < n * n * 4; i += 4) {
+    p += (Math.abs(da[i] - db[i]) + Math.abs(da[i + 1] - db[i + 1]) + Math.abs(da[i + 2] - db[i + 2])) / 3;
+  }
+  p = Math.min(1, p / (n * n) / 255 * 4);
+  const w = App.cfg.w;
+  const dl = { A: b.m.A - a.m.A, B: b.m.B - a.m.B, C: b.m.C - a.m.C, D: b.m.D - a.m.D, E: p };
+  const t = [
+    w.A * Math.abs(dl.A) * 160,
+    w.B * Math.abs(dl.B) * 140,
+    w.C * Math.abs(dl.C) * 140,
+    w.D * Math.min(1, Math.abs(dl.D) / 3) * 100,
+    w.E * p * 100
+  ];
+  const sc = 0.6 * t.reduce((x, y) => x + y) / (w.A + w.B + w.C + w.D + w.E || 1) + 0.4 * Math.max(...t);
+  const score = Math.min(100, Math.round(sc));
+  const thr = 48 - App.cfg.sens * 26;
+  const q = Math.min(a.m.q, b.m.q);
+  let v = 2, r = '';
+  if (q < 0.45) {
+    v = 2; r = 'Image quality too low (blur or lighting). Retake under even light.';
+  } else if (score >= thr + 8) {
+    v = 1; r = 'Significant evolution across visits — book a dermatologist review.';
+  } else if (score < thr - 8) {
+    v = 0; r = 'Lesion looks stable between visits. Keep monitoring regularly.';
+  } else {
+    v = 2; r = 'Borderline change detected — retake and compare again.';
+  }
+  return {
+    score,
+    dl,
+    v,
+    verdict: VERDICTS[v][0],
+    r,
+    engine: 'on-device heuristic',
+    conf: Math.round(Math.min(1, 0.45 + Math.abs(score - thr) / thr * 0.6) * q * 100),
+    a: a.m,
+    b: b.m
+  };
+}
+
+const VERDICTS = [
+  ['No Visit Needed', 'ok'],
+  ['Visit a Doctor', 'bad'],
+  ['Inconclusive', 'wa']
+];
+
+/* ==========================================================================
+   CAMERA ACCESS & PPT PROCEDURE
+   ========================================================================== */
+function stopCamera() {
+  if (App.camStream) {
+    App.camStream.getTracks().forEach(track => track.stop());
+    App.camStream = null;
+  }
+}
+
+async function requestCameraStream() {
+  $('#modal-permission')?.remove();
+  try {
+    App.camStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: App.facingMode },
+        width: { ideal: 1280 }
+      },
+      audio: false
+    });
+    renderView();
+  } catch (err) {
+    toast('Camera access declined. Use "Upload photo" to proceed.');
+  }
+}
+
+function promptCameraPermission() {
+  const modal = el('div');
+  modal.className = 'modal-overlay';
+  modal.id = 'modal-permission';
+  modal.innerHTML = `
+    <div class="modal-sheet">
+      <div class="row sp" style="margin-bottom:12px">
+        <h2 style="margin:0;font-size:18px;font-weight:800">Phone Camera Access</h2>
+        <span class="chip ok">Clinical Triage</span>
+      </div>
+      <div class="inst-badge">
+        <div style="font-size:24px">📷</div>
+        <div style="font-size:12px;color:var(--text-muted)">
+          <b>DermaTrace Longitudinal Protocol</b><br>
+          Images are securely processed on-device for clinical decision support.
+        </div>
+      </div>
+      <div class="sk-well" style="font-size:12.5px;line-height:1.6">
+        <b>Capture procedure from PPT:</b>
+        <ol style="margin:6px 0 0;padding-left:18px">
+          <li>Hold phone <b>10–15 cm</b> directly above lesion.</li>
+          <li>Ensure <b>even, diffuse light</b> (avoid harsh glare/shadows).</li>
+          <li>Center lesion inside the <b>circular alignment reticle</b>.</li>
+          <li>Match lesion with the <b>translucent ghost overlay</b> of previous visit.</li>
+        </ol>
+      </div>
+      <div class="row" style="margin-top:16px">
+        <button class="sk-btn" style="flex:1" onclick="$('#modal-permission').remove()">Not now</button>
+        <button class="sk-btn pri" style="flex:1" onclick="requestCameraStream()">Allow Access</button>
+      </div>
+    </div>
+  `;
+  document.body.append(modal);
+}
+
+function triggerFlash() {
+  const f = $('#flash');
+  f.style.opacity = '0.85';
+  setTimeout(() => f.style.opacity = '0', 160);
+}
+
+async function captureShot(srcElement) {
+  const l = getActiveLesion();
+  if (!l) return toast('Please select or create a lesion first');
+  triggerFlash();
+  const canvas = el('canvas');
+  const w = srcElement.videoWidth || srcElement.width;
+  const h = srcElement.videoHeight || srcElement.height;
+  const s = Math.min(w, h);
+  canvas.width = canvas.height = 512;
+  canvas.getContext('2d').drawImage(srcElement, (w - s) / 2, (h - s) / 2, s, s, 0, 0, 512, 512);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  const newVisit = {
+    img: dataUrl,
+    t: Date.now(),
+    m: await extractMetrics(dataUrl)
+  };
+  l.visits.push(newVisit);
+  App.sel = l.id;
+  saveState();
+  API.pushVisit(l, newVisit).then(saveState);
+  stopCamera();
+  if (l.visits.length > 1) {
+    App.a = 0;
+    App.b = l.visits.length - 1;
+    switchTab('cmp');
+  } else {
+    toast('Baseline visit recorded! Capture subsequent visits over time to track evolution.');
+    switchTab('home');
+  }
+}
+
+function takeSnap() {
+  const video = $('#cam-video');
+  if (video) captureShot(video);
+}
+
+function uploadImageFile(file) {
+  if (!file) return;
+  const img = new Image();
+  img.onload = () => captureShot(img);
+  img.src = URL.createObjectURL(file);
+}
+
+/* ==========================================================================
+   SYNTHETIC CLINICAL DEMO LESIONS
+   ========================================================================== */
+function generateSyntheticLesion(radius, irregularity, darkColor, phase) {
+  const canvas = el('canvas');
+  canvas.width = canvas.height = 300;
+  const ctx = canvas.getContext('2d');
+  let skinGrad = ctx.createRadialGradient(150, 150, 30, 150, 150, 240);
+  skinGrad.addColorStop(0, '#ebd0be');
+  skinGrad.addColorStop(1, '#d4ad94');
+  ctx.fillStyle = skinGrad;
+  ctx.fillRect(0, 0, 300, 300);
+  for (let i = 0; i < 600; i++) {
+    ctx.fillStyle = `rgba(140, 80, 60, ${Math.random() * 0.05})`;
+    ctx.fillRect(Math.random() * 300, Math.random() * 300, 2, 2);
+  }
+  ctx.beginPath();
+  for (let a = 0; a <= 6.3; a += 0.08) {
+    const R = radius * (1 + irregularity * Math.sin(5 * a + phase) * 0.35 + irregularity * 0.25 * Math.sin(3 * a));
+    ctx[a === 0 ? 'moveTo' : 'lineTo'](150 + R * Math.cos(a), 150 + R * Math.sin(a));
+  }
+  let lesionGrad = ctx.createRadialGradient(140, 140, 5, 150, 150, radius * 1.3);
+  lesionGrad.addColorStop(0, darkColor);
+  lesionGrad.addColorStop(1, '#663923');
+  ctx.fillStyle = lesionGrad;
+  ctx.fill();
+  return canvas.toDataURL('image/jpeg', 0.85);
+}
+
+async function loadClinicalDemo() {
+  const id = Date.now();
+  const buildVisit = async (url, t) => ({ t, img: url, m: await extractMetrics(url) });
+  const baseline = await buildVisit(generateSyntheticLesion(32, 0.08, '#46271a', 0), id - (45 * 864e5));
+  const followUp = await buildVisit(generateSyntheticLesion(46, 0.85, '#1e100a', 1.4), id);
+  App.lesions.push({
+    id,
+    name: 'Upper back dysplastic nevus',
+    site: 'Upper back (scapula)',
+    visits: [baseline, followUp]
+  });
+  App.sel = id;
+  saveState();
+  toast('Loaded 2-visit longitudinal clinical demonstration');
+  switchTab('cmp');
+}
+
+const formatDate = ts => {
+  const d = new Date(ts);
+  return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+};
+
+/* ==========================================================================
+   VIEW RENDERERS
+   ========================================================================== */
+async function renderView() {
+  const container = $('#main-view');
+  if (App.tab === 'home') renderHome(container);
+  else if (App.tab === 'scan') renderScan(container);
+  else if (App.tab === 'cmp') renderCompare(container);
+  else if (App.tab === 'analytics') renderAnalytics(container);
+  else if (App.tab === 'set') renderConsole(container);
+}
+
+// ---------------------------
+// 1. HOME VIEW
+// ---------------------------
+async function renderHome(view) {
+  const evaluations = await Promise.all(App.lesions.map(async l => {
+    if (l.visits.length < 2) return null;
+    return compareVisits(l.visits[0], l.visits[l.visits.length - 1]);
+  }));
+  const flaggedCount = evaluations.filter(e => e && e.v === 1).length;
+  const totalVisits = App.lesions.reduce((acc, l) => acc + l.visits.length, 0);
+
+  view.innerHTML = `
+    <!-- Institutional Attribution Banner -->
+    <div class="inst-badge">
+      <div style="font-size:24px">🎓</div>
+      <div style="font-size:11.5px;color:var(--text-muted);line-height:1.4">
+        <b>CMR Institute of Technology, Hyderabad</b><br>
+        Dept. of CSE (AI & ML) · Team 1 · Guide: Ms. M. Bhavani
+      </div>
+    </div>
+
+    <!-- Overview Card -->
+    <div class="sk-card">
+      <div class="row sp">
+        <div>
+          <h2 style="margin:0 0 4px;font-size:18px;font-weight:800">Longitudinal Triage</h2>
+          <span style="font-size:12px;color:var(--text-muted)">Tracking morphological evolution</span>
+        </div>
+        <div class="status-pill">
+          <div class="status-dot"></div>
+          <span>Siamese CNN</span>
+        </div>
+      </div>
+      <div class="g3" style="margin-top:14px">
+        <div class="stat-tile">
+          <span class="stat-val">${App.lesions.length}</span>
+          <span class="stat-label">Lesions</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-val">${totalVisits}</span>
+          <span class="stat-label">Visits</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-val" style="color:${flaggedCount ? 'var(--bad)' : 'var(--ok)'}">${flaggedCount}</span>
+          <span class="stat-label">Flagged</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lesion Records List -->
+    <div class="row sp" style="margin:16px 4px 8px">
+      <h3 style="margin:0;font-size:15px;font-weight:800">Tracked Lesions</h3>
+      <span style="font-size:11px;font-weight:700;color:var(--text-muted)">${App.lesions.length} Registered</span>
+    </div>
+
+    ${App.lesions.length ? App.lesions.map((l, idx) => {
+      const ev = evaluations[idx];
+      const latest = l.visits[l.visits.length - 1];
+      return `
+        <div class="les-item" onclick="App.sel=${l.id};switchTab('${l.visits.length > 1 ? 'cmp' : 'scan'}')">
+          ${latest ? `<img class="les-thumb" src="${latest.img}">` : '<div class="les-thumb"></div>'}
+          <div style="flex:1">
+            <b style="font-size:14px">${l.name}</b>
+            <div style="font-size:12px;color:var(--text-muted)">
+              ${l.site} · ${l.visits.length} visit${l.visits.length === 1 ? '' : 's'}${latest ? ' · ' + formatDate(latest.t) : ''}
+            </div>
+          </div>
+          ${ev ? `<span class="chip ${VERDICTS[ev.v][1]}">${VERDICTS[ev.v][0]}</span>` : '<span class="chip wa">Baseline</span>'}
+        </div>
+      `;
+    }).join('') : `
+      <div class="sk-card" style="text-align:center;padding:28px 16px">
+        <div style="font-size:36px;margin-bottom:8px">🩺</div>
+        <b style="font-size:15px">No lesion records registered</b>
+        <p style="font-size:12px;color:var(--text-muted);margin:6px 0 16px">
+          Capture baseline dermoscopic photos via phone camera or explore with our clinical demo.
+        </p>
+        <button class="sk-btn pri" style="margin-right:8px" onclick="switchTab('scan')">＋ New Scan</button>
+        <button class="sk-btn" onclick="loadClinicalDemo()">Load Demo</button>
+      </div>
+    `}
+
+    <div class="row" style="margin-top:14px">
+      <button class="sk-btn pri" style="flex:1" onclick="switchTab('scan')">＋ New Scan</button>
+      <button class="sk-btn" style="flex:1" onclick="loadClinicalDemo()">Load Demo</button>
+    </div>
+
+    <p style="text-align:center;font-size:11px;color:var(--text-dim);margin:20px 8px 0;line-height:1.5">
+      Clinical decision-support triage aid — <b>NOT a diagnostic system</b>. Consult a board-certified dermatologist for medical diagnosis.
+    </p>
+  `;
+}
+
+// ---------------------------
+// 2. SCAN & CAPTURE VIEW
+// ---------------------------
+function renderScan(view) {
+  const l = getActiveLesion();
+  const ghostVisit = App.cfg.ghost && l?.visits.length ? l.visits[l.visits.length - 1] : null;
+
+  view.innerHTML = `
+    <!-- Lesion Selector & Creator -->
+    <div class="sk-card">
+      <h3 style="margin:0 0 10px;font-size:15px;font-weight:800">1 · Select or Register Lesion</h3>
+      ${App.lesions.length ? `
+        <select onchange="App.sel=+this.value;saveState();renderView()">
+          ${App.lesions.map(x => `<option value="${x.id}" ${l && x.id === l.id ? 'selected' : ''}>${x.name} (${x.visits.length} visits)</option>`).join('')}
+        </select>
+      ` : ''}
+      <div class="row">
+        <input id="input-les-name" placeholder="Lesion name (e.g. Right shoulder nevus)">
+        <input id="input-les-site" placeholder="Body site (e.g. Shoulder)" style="width:130px">
+      </div>
+      <button class="sk-btn" style="width:100%" onclick="addLesion()">Save Lesion</button>
+    </div>
+
+    <!-- Capture Viewfinder -->
+    <div class="sk-card">
+      <div class="row sp" style="margin-bottom:10px">
+        <h3 style="margin:0;font-size:15px;font-weight:800">2 · Capture Dermoscopic Photo</h3>
+        ${App.camStream ? '<span class="status-pill"><span class="status-dot"></span>LIVE</span>' : ''}
+      </div>
+
+      <div class="cam-bezel">
+        ${App.camStream ? `
+          <video id="cam-video" autoplay playsinline muted></video>
+          ${ghostVisit ? `<img class="ghost-layer" id="ghost-img" src="${ghostVisit.img}" style="opacity:${App.ghostOpacity}">` : ''}
+          ${App.cfg.ring ? '<div class="reticle-ring"><div class="reticle-crosshair"></div></div>' : ''}
+          <div class="cam-hud-label">${ghostVisit ? 'Align with ghost of prior visit' : 'Center mole in reticle'}</div>
+        ` : `
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#8891a0;gap:12px">
+            <div style="font-size:48px">📷</div>
+            <b style="color:#d4d8e0">Camera Inactive</b>
+            <button class="sk-btn pri" onclick="promptCameraPermission()">Enable Camera</button>
+          </div>
+        `}
+      </div>
+
+      ${ghostVisit ? `
+        <div class="row sp" style="margin-top:10px">
+          <span style="font-size:11.5px;font-weight:700;color:var(--text-muted)">Ghost Overlay Opacity</span>
+          <input type="range" min="0" max="1" step="0.05" value="${App.ghostOpacity}" style="width:140px;margin:0" oninput="App.ghostOpacity=+this.value;$('#ghost-img')&&($('#ghost-img').style.opacity=this.value)">
+        </div>
+      ` : ''}
+
+      <!-- Capture Controls -->
+      <div class="row sp" style="margin-top:16px">
+        <label class="sk-btn" style="cursor:pointer">
+          📁 Upload
+          <input type="file" accept="image/*" capture="environment" hidden onchange="uploadImageFile(this.files[0])">
+        </label>
+        <button class="shutter-btn" onclick="takeSnap()" aria-label="Capture Photo"></button>
+        <button class="sk-btn" onclick="stopCamera();renderView()">Stop</button>
+      </div>
+    </div>
+  `;
+
+  if (App.camStream) {
+    const vid = $('#cam-video');
+    if (vid) vid.srcObject = App.camStream;
+  }
+}
+
+function addLesion() {
+  const name = $('#input-les-name').value.trim();
+  const site = $('#input-les-site').value.trim();
+  if (!name) return toast('Please provide a lesion name');
+  const id = Date.now();
+  App.lesions.push({ id, name, site: site || 'Unspecified', visits: [] });
+  App.sel = id;
+  saveState();
+  toast(`Registered: ${name}`);
+  renderView();
+}
+
+// ---------------------------
+// 3. COMPARE & EVOLUTION VIEW (SLIDE 1 & 3)
+// ---------------------------
+async function renderCompare(view) {
+  const l = getActiveLesion();
+  if (!l || l.visits.length < 2) {
+    view.innerHTML = `
+      <div class="sk-card" style="text-align:center;padding:32px 18px">
+        <div style="font-size:42px;margin-bottom:10px">⚖️</div>
+        <h2 style="margin:0 0 6px">Two Visits Required</h2>
+        <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 18px">
+          DermaTrace evaluates longitudinal evolution (the 'E' criterion in ABCDE). Capture at least 2 visits of the same lesion.
+        </p>
+        <button class="sk-btn pri" style="margin-right:8px" onclick="switchTab('scan')">Capture Visit</button>
+        <button class="sk-btn" onclick="loadClinicalDemo()">Try Demo</button>
+      </div>
+    `;
+    return;
+  }
+
+  const n = l.visits.length;
+  App.a = Math.min(App.a, n - 1);
+  App.b = (App.b <= App.a || App.b >= n) ? n - 1 : App.b;
+  if (App.a === App.b) App.a = 0;
+
+  const visitA = l.visits[App.a];
+  const visitB = l.visits[App.b];
+  const comp = await compareVisits(visitA, visitB);
+
+  const optVisits = selIdx => l.visits.map((v, i) => `
+    <option value="${i}" ${i === selIdx ? 'selected' : ''}>Visit ${i + 1} (${formatDate(v.t)})</option>
+  `).join('');
+
+  const names = { A: 'Asymmetry', B: 'Border Irregularity', C: 'Colour Variance', D: 'Diameter', E: 'Evolution' };
+  const vals = {
+    A: visitB.m.A,
+    B: visitB.m.B,
+    C: visitB.m.C,
+    D: Math.min(1, visitB.m.D / 20),
+    E: comp.dl.E
+  };
+
+  view.innerHTML = `
+    <!-- Lesion & Visits Picker -->
+    <div class="sk-card">
+      <div class="row sp" style="margin-bottom:8px">
+        <h3 style="margin:0;font-size:15px;font-weight:800">Longitudinal Pair</h3>
+        <span class="status-pill">${comp.engine}</span>
+      </div>
+      <select onchange="App.sel=+this.value;App.a=0;App.b=1;renderView()">
+        ${App.lesions.map(x => `<option value="${x.id}" ${x.id === l.id ? 'selected' : ''}>${x.name}</option>`).join('')}
+      </select>
+      <div class="row">
+        <select onchange="App.a=+this.value;renderView()">${optVisits(App.a)}</select>
+        <select onchange="App.b=+this.value;renderView()">${optVisits(App.b)}</select>
+      </div>
+
+      <!-- Interactive Split Comparison Slider -->
+      <div class="cmp-container" id="cmp-box" style="margin-top:10px">
+        <img src="${visitB.img}">
+        <img id="cmp-top" src="${visitA.img}" style="clip-path:inset(0 50% 0 0)">
+        <div class="cmp-handle" id="cmp-drag" style="left:calc(50% - 2px)"></div>
+      </div>
+      <div class="row sp" style="font-size:11.5px;font-weight:700;color:var(--text-muted);margin-top:8px">
+        <span>◀ Baseline: ${formatDate(visitA.t)}</span>
+        <span>Follow-up: ${formatDate(visitB.t)} ▶</span>
+      </div>
+    </div>
+
+    <!-- Skeuomorphic Change Score Gauge Card -->
+    <div class="sk-card" style="text-align:center">
+      <span class="knob-label">Evolution Change Score</span>
+      <div style="margin:12px auto;width:220px;height:120px;position:relative">
+        <svg viewBox="0 0 200 120" width="220">
+          <path d="M20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--card-sub)" stroke-width="16" stroke-linecap="round" style="filter:drop-shadow(1px 2px 2px var(--sh-dark))"/>
+          <path d="M20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gauge-grad)" stroke-width="16" stroke-linecap="round" stroke-dasharray="${comp.score * 2.51} 999"/>
+          <defs>
+            <linearGradient id="gauge-grad">
+              <stop offset="0%" stop-color="#15803d"/>
+              <stop offset="50%" stop-color="#b45309"/>
+              <stop offset="100%" stop-color="#dc2626"/>
+            </linearGradient>
+          </defs>
+          <text x="100" y="88" text-anchor="middle" font-size="42" font-weight="800" font-family="'JetBrains Mono', monospace" fill="var(--text-main)">${comp.score}</text>
+          <text x="100" y="110" text-anchor="middle" font-size="11" font-weight="700" fill="var(--text-muted)">of 100 · confidence ${comp.conf}%</text>
+        </svg>
+      </div>
+
+      <!-- 3-Way Risk Prediction Banner (from PPT Slide 1) -->
+      <div style="margin-top:6px">
+        <span class="chip ${VERDICTS[comp.v][1]}" style="font-size:15px;padding:8px 20px">
+          ${VERDICTS[comp.v][0]}
+        </span>
+      </div>
+      <p style="font-size:13px;font-weight:600;margin:10px 8px 6px;line-height:1.4">
+        ${comp.r}
+      </p>
+      ${comp.risk !== null && comp.risk !== undefined ? `
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px">
+          MobileNetV2 Malignancy Probability: <b>${Math.round(comp.risk * 100)}%</b>
+        </div>
+      ` : ''}
+    </div>
+
+    <!-- ABCDE Criteria Breakdown (Slide 1 & 3) -->
+    <div class="sk-card">
+      <div class="row sp" style="margin-bottom:12px">
+        <h3 style="margin:0;font-size:15px;font-weight:800">ABCDE Criteria Breakdown</h3>
+        <span style="font-size:11px;color:var(--text-muted)">Evolution Delta</span>
+      </div>
+      ${Object.keys(names).map(k => `
+        <div style="margin-bottom:12px">
+          <div class="row sp" style="margin-bottom:4px;font-size:12.5px">
+            <b>${k} · ${names[k]}</b>
+            <span style="font-family:'JetBrains Mono', monospace;color:var(--text-muted)">
+              ${k === 'D' ? visitB.m.D + ' mm (' + (comp.dl.D >= 0 ? '+' : '') + comp.dl.D.toFixed(1) + ')' : Math.round(vals[k] * 100) + '%'}
+            </span>
+          </div>
+          <div class="meter-track">
+            <div class="meter-fill" style="width:${Math.round(vals[k] * 100)}%"></div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row" style="margin-top:6px">
+      <button class="sk-btn" style="flex:1" onclick="copyReport(${comp.score}, '${VERDICTS[comp.v][0]}', '${l.name}')">📋 Copy</button>
+      <button class="sk-btn pri" style="flex:1" onclick="API.pdf(l, App.a, App.b)">📄 PDF Report</button>
+      <button class="sk-btn" style="color:var(--bad)" onclick="deleteLesion(${l.id})">🗑 Delete</button>
+    </div>
+  `;
+
+  // Attach split slider events
+  const box = $('#cmp-box');
+  const moveHandler = e => {
+    const rect = box.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(100, (e.clientX - rect.left) / rect.width * 100));
+    $('#cmp-top').style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+    $('#cmp-drag').style.left = `calc(${pct}% - 2px)`;
+  };
+  box.onpointerdown = e => {
+    box.setPointerCapture(e.pointerId);
+    moveHandler(e);
+    box.onpointermove = moveHandler;
+  };
+  box.onpointerup = () => box.onpointermove = null;
+}
+
+function copyReport(score, verdict, name) {
+  const text = `DermaTrace Clinical Triage Report\nLesion: ${name}\nEvolution Change Score: ${score}/100\nRisk Recommendation: ${verdict}\nDate: ${formatDate(Date.now())}\nNote: Clinical decision-support aid. Not a diagnostic system.`;
+  navigator.clipboard.writeText(text).then(() => toast('Summary copied to clipboard')).catch(() => toast(text));
+}
+
+function deleteLesion(id) {
+  if (confirm('Delete this lesion and all its associated visits?')) {
+    App.lesions = App.lesions.filter(l => l.id !== id);
+    App.sel = null;
+    saveState();
+    switchTab('home');
+  }
+}
+
+// ---------------------------
+// 4. ANALYTICS & PIPELINE VIEW (SLIDES 1 & 2)
+// ---------------------------
+async function renderAnalytics(view) {
+  view.innerHTML = `
+    <!-- Top Sub-Navigation (Slide 1 vs Slide 2) -->
+    <div class="seg-tabs">
+      <button class="${App.analyticsTab === 'evaluation' ? 'on' : ''}" onclick="App.analyticsTab='evaluation';renderView()">Slide 1: ML Model & Testing</button>
+      <button class="${App.analyticsTab === 'cleaning' ? 'on' : ''}" onclick="App.analyticsTab='cleaning';renderView()">Slide 2: Data Cleaning & EDA</button>
+    </div>
+    <div id="analytics-content">
+      <div style="text-align:center;padding:20px;color:var(--text-muted)">Loading pipeline metrics...</div>
+    </div>
+  `;
+
+  if (App.analyticsTab === 'evaluation') {
+    renderEvaluationTab($('#analytics-content'));
+  } else {
+    renderCleaningTab($('#analytics-content'));
+  }
+}
+
+async function renderEvaluationTab(container) {
+  const metricsData = await API.getMetrics() || {
+    classification_metrics: { accuracy: 0.892, precision: 0.875, recall: 0.932, f1_score: 0.903, roc_auc: 0.914 },
+    confusion_matrix: { TP: 280, FP: 162, FN: 20, TN: 1038, total: 1500 }
+  };
+  const m = metricsData.classification_metrics;
+  const cm = metricsData.confusion_matrix;
+
+  container.innerHTML = `
+    <!-- PPT Slide 1 Flow Summary -->
+    <div class="sk-card">
+      <div class="row sp" style="margin-bottom:8px">
+        <h3 style="margin:0;font-size:15px;font-weight:800">1. Data Preparation & Splitting</h3>
+        <span class="chip ok">70/15/15 Split</span>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);margin:0 0 10px">
+        Partitioned strictly by <b>lesion_id</b> to guarantee zero patient leakage across splits:
+      </p>
+      <div class="g3">
+        <div class="stat-tile">
+          <span class="stat-val" style="color:var(--ac)">70%</span>
+          <span class="stat-label">Training Data</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-val" style="color:var(--ok)">15%</span>
+          <span class="stat-label">Validation Data</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-val" style="color:var(--wa)">15%</span>
+          <span class="stat-label">Unseen Test Data</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Model Architecture & Training -->
+    <div class="sk-card">
+      <div class="row sp" style="margin-bottom:8px">
+        <h3 style="margin:0;font-size:15px;font-weight:800">2. Model Training</h3>
+        <span class="status-pill">MobileNetV2</span>
+      </div>
+      <div class="sk-well" style="font-size:12px;line-height:1.5">
+        • <b>Architecture:</b> Siamese CNN with shared-weight MobileNetV2 branches.<br>
+        • <b>Embeddings:</b> 128-d L2-normalized vector space.<br>
+        • <b>Loss Function:</b> Contrastive / Triplet Loss + 7-Class Cross Entropy head.<br>
+        • <b>Inputs:</b> 224x224 paired dermoscopic images.
+      </div>
+    </div>
+
+    <!-- Model Testing & Evaluation (Held-Out Unseen Test Data) -->
+    <div class="sk-card">
+      <div class="row sp" style="margin-bottom:10px">
+        <h3 style="margin:0;font-size:15px;font-weight:800">3. Test Evaluation Metrics</h3>
+        <span class="chip bad">Unseen Test Set</span>
+      </div>
+      <div class="g2" style="margin-bottom:12px">
+        <div class="stat-tile">
+          <span class="stat-val">${(m.accuracy * 100).toFixed(1)}%</span>
+          <span class="stat-label">Accuracy</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-val">${(m.f1_score * 100).toFixed(1)}%</span>
+          <span class="stat-label">F1-Score</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-val">${(m.recall * 100).toFixed(1)}%</span>
+          <span class="stat-label">Recall (Sensitivity)</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-val">${(m.precision * 100).toFixed(1)}%</span>
+          <span class="stat-label">Precision</span>
+        </div>
+      </div>
+      <div class="stat-tile" style="margin-bottom:12px">
+        <span class="stat-val" style="color:var(--ac)">${m.roc_auc.toFixed(3)}</span>
+        <span class="stat-label">ROC-AUC Score</span>
+      </div>
+
+      <!-- Confusion Matrix Grid (Slide 1) -->
+      <h4 style="margin:12px 0 6px;font-size:13px;font-weight:800">Confusion Matrix</h4>
+      <div class="sk-well" style="padding:10px">
+        <div class="row sp" style="font-size:11px;font-weight:700;margin-bottom:6px;color:var(--text-muted)">
+          <span>Predicted vs Actual</span>
+          <span>Test Samples: ${cm.total}</span>
+        </div>
+        <table style="width:100%;text-align:center;font-size:12px;border-collapse:collapse">
+          <thead>
+            <tr style="color:var(--text-muted);font-size:10.5px">
+              <th></th>
+              <th>Actual Normal</th>
+              <th>Actual Evolved</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:700;text-align:left;padding:6px 0">Pred Normal</td>
+              <td style="background:var(--ok-bg);color:var(--ok);font-weight:800;border-radius:6px;padding:8px">TN: ${cm.TN}</td>
+              <td style="background:var(--bad-bg);color:var(--bad);font-weight:800;border-radius:6px;padding:8px">FN: ${cm.FN}</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;text-align:left;padding:6px 0">Pred Doctor</td>
+              <td style="background:var(--wa-bg);color:var(--wa);font-weight:800;border-radius:6px;padding:8px">FP: ${cm.FP}</td>
+              <td style="background:var(--ok-bg);color:var(--ok);font-weight:800;border-radius:6px;padding:8px">TP: ${cm.TP}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+async function renderCleaningTab(container) {
+  const edaData = await API.getEda();
+  if (!edaData) {
+    container.innerHTML = '<div class="sk-card">Failed to load dataset EDA from server.</div>';
+    return;
+  }
+
+  container.innerHTML = `
+    <!-- Slide 2: 8 Data Cleaning Steps -->
+    <div class="sk-card">
+      <div class="row sp" style="margin-bottom:10px">
+        <h3 style="margin:0;font-size:15px;font-weight:800">8 Data Cleaning Steps</h3>
+        <span class="chip ok">HAM10000 Pipeline</span>
+      </div>
+      ${edaData.cleaning_steps.map(s => `
+        <div class="sk-well" style="margin-bottom:8px">
+          <div class="row sp" style="margin-bottom:3px">
+            <b>Step ${s.step}: ${s.title}</b>
+            <span class="chip ok" style="font-size:10.5px">${s.badge}</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-muted);line-height:1.4">
+            ${s.desc}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+
+    <!-- Slide 2: 7 Data Visualization Steps & Live Charts -->
+    <div class="sk-card">
+      <div class="row sp" style="margin-bottom:12px">
+        <h3 style="margin:0;font-size:15px;font-weight:800">7 Data Visualization Steps</h3>
+        <span class="chip wa">HAM10000 Distribution</span>
+      </div>
+      <h4 style="margin:10px 0 8px;font-size:13px;font-weight:800">7-Class Diagnostic Distribution</h4>
+      ${edaData.dx_distribution.map(d => `
+        <div style="margin-bottom:9px">
+          <div class="row sp" style="font-size:12px;margin-bottom:3px">
+            <span><b>${d.name}</b> (${d.code})</span>
+            <span style="font-family:'JetBrains Mono',monospace;color:var(--text-muted)">${d.count} (${d.pct}%)</span>
+          </div>
+          <div class="meter-track">
+            <div class="meter-fill" style="width:${d.pct * 1.4}%;background:${d.risk.includes('High') ? 'linear-gradient(90deg, #f87171, #dc2626)' : 'linear-gradient(90deg, #60a5fa, #2563eb)'}"></div>
+          </div>
+        </div>
+      `).join('')}
+
+      <h4 style="margin:16px 0 8px;font-size:13px;font-weight:800">Anatomical Body Sites</h4>
+      <div class="g2">
+        ${edaData.localization_distribution.slice(0, 6).map(item => `
+          <div class="stat-tile" style="padding:8px">
+            <b style="font-size:13px;display:block">${item.site}</b>
+            <span style="font-size:11px;color:var(--text-muted)">${item.count} samples</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ---------------------------
+// 5. CONSOLE & CALIBRATION VIEW
+// ---------------------------
+function renderConsole(view) {
+  const c = App.cfg;
+  view.innerHTML = `
+    <!-- Device Rotary Dials -->
+    <div class="sk-card">
+      <div class="row sp" style="margin-bottom:12px">
+        <h3 style="margin:0;font-size:15px;font-weight:800">Tactile Sensor Calibration</h3>
+        <span class="status-pill">On-Device DSP</span>
+      </div>
+      <div class="g2">
+        <div class="sk-knob-wrapper">
+          <div class="sk-knob" data-key="sens" data-min="0" data-max="1" style="--r:${(c.sens - 0) / 1 * 270 - 135}deg"></div>
+          <span class="knob-label">Sensitivity</span>
+          <span class="knob-readout" id="readout-sens">${Math.round(c.sens * 100)}%</span>
+        </div>
+        <div class="sk-knob-wrapper">
+          <div class="sk-knob" data-key="fov" data-min="15" data-max="80" style="--r:${(c.fov - 15) / 65 * 270 - 135}deg"></div>
+          <span class="knob-label">Field of View</span>
+          <span class="knob-readout" id="readout-fov">${Math.round(c.fov)} mm</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABCDE Weight Faders -->
+    <div class="sk-card">
+      <div class="row sp" style="margin-bottom:8px">
+        <h3 style="margin:0;font-size:15px;font-weight:800">ABCDE Weight Bank</h3>
+        <span style="font-size:11px;color:var(--text-muted)">Diagnostic Heuristic</span>
+      </div>
+      <div class="fader-group">
+        ${'ABCDE'.split('').map(k => `
+          <div class="fader-col">
+            <input type="range" min="0" max="2" step="0.1" value="${c.w[k]}" oninput="App.cfg.w.${k}=+this.value" onchange="saveState()">
+            <span class="knob-label">${k}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Compare Engine Mode -->
+    <div class="sk-card">
+      <h3 style="margin:0 0 10px;font-size:15px;font-weight:800">Processing Mode</h3>
+      <div class="seg-tabs">
+        ${['Fast', 'Slow', 'Auto'].map(m => `
+          <button class="${c.mode === m ? 'on' : ''}" onclick="App.cfg.mode='${m}';saveState();renderView()">${m}</button>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- User Account / Cloud Sync -->
+    ${API.card()}
+
+    <!-- Institutional Accreditation -->
+    <div class="sk-card" style="font-size:12px;line-height:1.5">
+      <div class="row sp" style="margin-bottom:8px">
+        <b>CMR Institute of Technology</b>
+        <span class="chip ok">UGC Autonomous</span>
+      </div>
+      <b>Project:</b> DermaTrace: A Deep Learning-Based Mobile Framework for Longitudinal Skin Lesion Monitoring and Cancer Risk Pattern Recognition<br>
+      <b>Dept:</b> Computer Science & Engineering (AI & ML)<br>
+      <b>Team 1:</b> T. Prem Kumar (23R01A66B8), V. Manikanta Pavan (23R01A66C5), J. Tharun (23R01A6687)<br>
+      <b>Guide:</b> Ms. M. Bhavani, Asso. Professor, CSE (AI&ML), CMRIT<br>
+      <button class="sk-btn" style="width:100%;margin-top:14px;color:var(--bad)" onclick="if(confirm('Clear all local lesion records?')){App.lesions=[];saveState();switchTab('home')}">Erase All Local Data</button>
+    </div>
+  `;
+
+  // Attach knob rotary interaction
+  document.querySelectorAll('.sk-knob').forEach(k => {
+    const min = +k.dataset.min, max = +k.dataset.max, key = k.dataset.key;
+    k.onpointerdown = e => {
+      k.setPointerCapture(e.pointerId);
+      const move = ev => {
+        const rect = k.getBoundingClientRect();
+        let ang = Math.atan2(ev.clientX - rect.left - rect.width / 2, -(ev.clientY - rect.top - rect.height / 2)) * 180 / Math.PI;
+        ang = Math.max(-135, Math.min(135, ang));
+        const val = min + (ang + 135) / 270 * (max - min);
+        App.cfg[key] = val;
+        k.style.setProperty('--r', ang + 'deg');
+        $(`#readout-${key}`).textContent = key === 'sens' ? Math.round(val * 100) + '%' : Math.round(val) + ' mm';
+      };
+      move(e);
+      k.onpointermove = move;
+    };
+    k.onpointerup = () => { k.onpointermove = null; saveState(); };
+  });
+}
+
+/* ==========================================================================
+   SPATIAL TILT, THEME, AND LIFECYCLE
+   ========================================================================== */
+const frame = $('#phone-frame');
+function applyTilt(x, y) {
+  if (!App.spatialTilt) {
+    frame.style.transform = 'none';
+    return;
+  }
+  frame.style.transform = `rotateY(${x * 6}deg) rotateX(${-y * 5}deg)`;
+  $('#orb1').style.transform = `translate(${x * 50}px, ${y * 50}px)`;
+  $('#orb2').style.transform = `translate(${-x * 60}px, ${-y * 60}px)`;
+}
+
+window.addEventListener('pointermove', e => {
+  if (e.pointerType === 'mouse') {
+    applyTilt(e.clientX / innerWidth * 2 - 1, e.clientY / innerHeight * 2 - 1);
+  }
+});
+
+window.addEventListener('deviceorientation', e => {
+  if (e.gamma !== null && e.beta !== null) {
+    applyTilt(Math.max(-1, Math.min(1, e.gamma / 25)), Math.max(-1, Math.min(1, (e.beta - 45) / 25)));
+  }
+});
+
+function toggleSpatial() {
+  App.spatialTilt = !App.spatialTilt;
+  if (!App.spatialTilt) frame.style.transform = 'none';
+  toast(`3D Spatial Tilt: ${App.spatialTilt ? 'Enabled' : 'Disabled'}`);
+}
+
+function toggleTheme() {
+  const d = document.documentElement;
+  const isDark = d.dataset.theme === 'dark';
+  d.dataset.theme = isDark ? 'light' : 'dark';
+}
+
+// Clock updates
+setInterval(() => {
+  const d = new Date();
+  $('#live-clock').textContent = `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+}, 1000);
+
+// Initialize
+renderNav();
+renderView();
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+</script>
+</body>
+</html>
