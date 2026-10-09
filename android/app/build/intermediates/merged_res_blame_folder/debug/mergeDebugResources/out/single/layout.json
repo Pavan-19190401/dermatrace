@@ -1,0 +1,34 @@
+[
+    {
+        "merged": "com.dermatrace.app-mergeDebugResources-37:/layout/activity_login.xml",
+        "source": "com.dermatrace.app-main-40:/layout/activity_login.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-mergeDebugResources-37:/layout/activity_patient_dashboard.xml",
+        "source": "com.dermatrace.app-main-40:/layout/activity_patient_dashboard.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-mergeDebugResources-37:/layout/activity_compare.xml",
+        "source": "com.dermatrace.app-main-40:/layout/activity_compare.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-mergeDebugResources-37:/layout/activity_registry.xml",
+        "source": "com.dermatrace.app-main-40:/layout/activity_registry.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-mergeDebugResources-37:/layout/activity_camera.xml",
+        "source": "com.dermatrace.app-main-40:/layout/activity_camera.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-mergeDebugResources-37:/layout/activity_main.xml",
+        "source": "com.dermatrace.app-main-40:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-mergeDebugResources-37:/layout/activity_metrics.xml",
+        "source": "com.dermatrace.app-main-40:/layout/activity_metrics.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-mergeDebugResources-37:/layout/item_patient.xml",
+        "source": "com.dermatrace.app-main-40:/layout/item_patient.xml"
+    }
+]

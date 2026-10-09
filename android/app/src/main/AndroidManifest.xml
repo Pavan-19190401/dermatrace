@@ -21,15 +21,27 @@
         android:theme="@style/Theme.DermaTrace"
         android:usesCleartextTraffic="true">
 
-        <!-- Main Dashboard Activity -->
+        <!-- Authentication & Role Portal (Launcher) -->
         <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Patient Dashboard Activity -->
+        <activity
+            android:name=".PatientDashboardActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Clinician / Admin Workstation Activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <!-- CameraX Viewfinder with 10-15cm Reticle & Ghost Overlay -->
         <activity

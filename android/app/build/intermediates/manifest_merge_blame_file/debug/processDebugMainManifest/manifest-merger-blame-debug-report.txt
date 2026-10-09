@@ -1,0 +1,227 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.dermatrace.app"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+9        android:targetSdkVersion="34" />
+10
+11    <!-- Hardware and Network Permissions -->
+12    <uses-permission android:name="android.permission.CAMERA" />
+12-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:5:5-65
+12-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:5:22-62
+13    <uses-permission android:name="android.permission.INTERNET" />
+13-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:6:5-67
+13-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:6:22-64
+14    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+14-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:7:5-79
+14-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:7:22-76
+15
+16    <uses-feature
+16-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:9:5-11:35
+17        android:name="android.hardware.camera"
+17-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:10:9-47
+18        android:required="true" />
+18-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:11:9-32
+19    <uses-feature
+19-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:12:5-14:36
+20        android:name="android.hardware.camera.autofocus"
+20-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:13:9-57
+21        android:required="false" />
+21-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:14:9-33
+22
+23    <permission
+23-->[androidx.core:core:1.13.1] C:\Users\manik\.gradle\caches\8.13\transforms\a5bc02997e7c6ec53f00e866e92fe2df\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+24        android:name="com.dermatrace.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+24-->[androidx.core:core:1.13.1] C:\Users\manik\.gradle\caches\8.13\transforms\a5bc02997e7c6ec53f00e866e92fe2df\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+25        android:protectionLevel="signature" />
+25-->[androidx.core:core:1.13.1] C:\Users\manik\.gradle\caches\8.13\transforms\a5bc02997e7c6ec53f00e866e92fe2df\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+26
+27    <uses-permission android:name="com.dermatrace.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+27-->[androidx.core:core:1.13.1] C:\Users\manik\.gradle\caches\8.13\transforms\a5bc02997e7c6ec53f00e866e92fe2df\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+27-->[androidx.core:core:1.13.1] C:\Users\manik\.gradle\caches\8.13\transforms\a5bc02997e7c6ec53f00e866e92fe2df\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+28
+29    <application
+29-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:16:5-70:19
+30        android:allowBackup="true"
+30-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:17:9-35
+31        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+31-->[androidx.core:core:1.13.1] C:\Users\manik\.gradle\caches\8.13\transforms\a5bc02997e7c6ec53f00e866e92fe2df\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+32        android:debuggable="true"
+33        android:extractNativeLibs="false"
+34        android:icon="@android:drawable/sym_def_app_icon"
+34-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:18:9-58
+35        android:label="@string/app_name"
+35-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:19:9-41
+36        android:supportsRtl="true"
+36-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:20:9-35
+37        android:theme="@style/Theme.DermaTrace"
+37-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:21:9-48
+38        android:usesCleartextTraffic="true" >
+38-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:22:9-44
+39
+40        <!-- Authentication & Role Portal (Launcher) -->
+41        <activity
+41-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:25:9-32:20
+42            android:name="com.dermatrace.app.LoginActivity"
+42-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:26:13-42
+43            android:exported="true" >
+43-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:27:13-36
+44            <intent-filter>
+44-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:28:13-31:29
+45                <action android:name="android.intent.action.MAIN" />
+45-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:29:17-69
+45-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:29:25-66
+46
+47                <category android:name="android.intent.category.LAUNCHER" />
+47-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:30:17-77
+47-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:30:27-74
+48            </intent-filter>
+49        </activity>
+50
+51        <!-- Patient Dashboard Activity -->
+52        <activity
+52-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:35:9-38:52
+53            android:name="com.dermatrace.app.PatientDashboardActivity"
+53-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:36:13-53
+54            android:exported="false"
+54-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:37:13-37
+55            android:screenOrientation="portrait" />
+55-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:38:13-49
+56
+57        <!-- Clinician / Admin Workstation Activity -->
+58        <activity
+58-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:41:9-44:52
+59            android:name="com.dermatrace.app.MainActivity"
+59-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:42:13-41
+60            android:exported="false"
+60-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:43:13-37
+61            android:screenOrientation="portrait" />
+61-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:44:13-49
+62
+63        <!-- CameraX Viewfinder with 10-15cm Reticle & Ghost Overlay -->
+64        <activity
+64-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:47:9-50:52
+65            android:name="com.dermatrace.app.CameraActivity"
+65-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:48:13-43
+66            android:exported="false"
+66-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:49:13-37
+67            android:screenOrientation="portrait" />
+67-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:50:13-49
+68
+69        <!-- Interactive Before/After Split Wipe Comparison -->
+70        <activity
+70-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:53:9-56:52
+71            android:name="com.dermatrace.app.CompareActivity"
+71-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:54:13-44
+72            android:exported="false"
+72-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:55:13-37
+73            android:screenOrientation="portrait" />
+73-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:56:13-49
+74
+75        <!-- Clinician Workstation: Multi-Patient Registry -->
+76        <activity
+76-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:59:9-62:52
+77            android:name="com.dermatrace.app.RegistryActivity"
+77-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:60:13-45
+78            android:exported="false"
+78-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:61:13-37
+79            android:screenOrientation="portrait" />
+79-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:62:13-49
+80
+81        <!-- Clinician Workstation: Slide 1 & Slide 2 Analytics & Confusion Matrix -->
+82        <activity
+82-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:65:9-68:52
+83            android:name="com.dermatrace.app.ModelMetricsActivity"
+83-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:66:13-49
+84            android:exported="false"
+84-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:67:13-37
+85            android:screenOrientation="portrait" />
+85-->C:\Users\manik\Downloads\dermatrace-fullstack (3)\dermatrace\android\app\src\main\AndroidManifest.xml:68:13-49
+86
+87        <service
+87-->[androidx.camera:camera-camera2:1.3.4] C:\Users\manik\.gradle\caches\8.13\transforms\54aa4f2e0d809698be1f1d89d71ead1e\transformed\camera-camera2-1.3.4\AndroidManifest.xml:24:9-33:19
+88            android:name="androidx.camera.core.impl.MetadataHolderService"
+88-->[androidx.camera:camera-camera2:1.3.4] C:\Users\manik\.gradle\caches\8.13\transforms\54aa4f2e0d809698be1f1d89d71ead1e\transformed\camera-camera2-1.3.4\AndroidManifest.xml:25:13-75
+89            android:enabled="false"
+89-->[androidx.camera:camera-camera2:1.3.4] C:\Users\manik\.gradle\caches\8.13\transforms\54aa4f2e0d809698be1f1d89d71ead1e\transformed\camera-camera2-1.3.4\AndroidManifest.xml:26:13-36
+90            android:exported="false" >
+90-->[androidx.camera:camera-camera2:1.3.4] C:\Users\manik\.gradle\caches\8.13\transforms\54aa4f2e0d809698be1f1d89d71ead1e\transformed\camera-camera2-1.3.4\AndroidManifest.xml:27:13-37
+91            <meta-data
+91-->[androidx.camera:camera-camera2:1.3.4] C:\Users\manik\.gradle\caches\8.13\transforms\54aa4f2e0d809698be1f1d89d71ead1e\transformed\camera-camera2-1.3.4\AndroidManifest.xml:30:13-32:89
+92                android:name="androidx.camera.core.impl.MetadataHolderService.DEFAULT_CONFIG_PROVIDER"
+92-->[androidx.camera:camera-camera2:1.3.4] C:\Users\manik\.gradle\caches\8.13\transforms\54aa4f2e0d809698be1f1d89d71ead1e\transformed\camera-camera2-1.3.4\AndroidManifest.xml:31:17-103
+93                android:value="androidx.camera.camera2.Camera2Config$DefaultProvider" />
+93-->[androidx.camera:camera-camera2:1.3.4] C:\Users\manik\.gradle\caches\8.13\transforms\54aa4f2e0d809698be1f1d89d71ead1e\transformed\camera-camera2-1.3.4\AndroidManifest.xml:32:17-86
+94        </service>
+95
+96        <provider
+96-->[androidx.emoji2:emoji2:1.3.0] C:\Users\manik\.gradle\caches\8.13\transforms\c34bc34641e138c5973711378a61e07b\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+97            android:name="androidx.startup.InitializationProvider"
+97-->[androidx.emoji2:emoji2:1.3.0] C:\Users\manik\.gradle\caches\8.13\transforms\c34bc34641e138c5973711378a61e07b\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+98            android:authorities="com.dermatrace.app.androidx-startup"
+98-->[androidx.emoji2:emoji2:1.3.0] C:\Users\manik\.gradle\caches\8.13\transforms\c34bc34641e138c5973711378a61e07b\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+99            android:exported="false" >
+99-->[androidx.emoji2:emoji2:1.3.0] C:\Users\manik\.gradle\caches\8.13\transforms\c34bc34641e138c5973711378a61e07b\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+100            <meta-data
+100-->[androidx.emoji2:emoji2:1.3.0] C:\Users\manik\.gradle\caches\8.13\transforms\c34bc34641e138c5973711378a61e07b\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+101                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+101-->[androidx.emoji2:emoji2:1.3.0] C:\Users\manik\.gradle\caches\8.13\transforms\c34bc34641e138c5973711378a61e07b\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+102                android:value="androidx.startup" />
+102-->[androidx.emoji2:emoji2:1.3.0] C:\Users\manik\.gradle\caches\8.13\transforms\c34bc34641e138c5973711378a61e07b\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+103            <meta-data
+103-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\manik\.gradle\caches\8.13\transforms\15a8d61b2a536dcbac790ccae9d196d4\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:29:13-31:52
+104                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+104-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\manik\.gradle\caches\8.13\transforms\15a8d61b2a536dcbac790ccae9d196d4\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:30:17-78
+105                android:value="androidx.startup" />
+105-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\manik\.gradle\caches\8.13\transforms\15a8d61b2a536dcbac790ccae9d196d4\transformed\lifecycle-process-2.7.0\AndroidManifest.xml:31:17-49
+106            <meta-data
+106-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+107                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+107-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+108                android:value="androidx.startup" />
+108-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+109        </provider>
+110
+111        <receiver
+111-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+112            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+112-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+113            android:directBootAware="false"
+113-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+114            android:enabled="true"
+114-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+115            android:exported="true"
+115-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+116            android:permission="android.permission.DUMP" >
+116-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+117            <intent-filter>
+117-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+118                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+118-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+118-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+119            </intent-filter>
+120            <intent-filter>
+120-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+121                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+121-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+121-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+122            </intent-filter>
+123            <intent-filter>
+123-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+124                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+124-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+124-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+125            </intent-filter>
+126            <intent-filter>
+126-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+127                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+127-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+127-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\manik\.gradle\caches\8.13\transforms\df8e074848aa1eaf07aaf81e0b8bbe99\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+128            </intent-filter>
+129        </receiver>
+130    </application>
+131
+132</manifest>

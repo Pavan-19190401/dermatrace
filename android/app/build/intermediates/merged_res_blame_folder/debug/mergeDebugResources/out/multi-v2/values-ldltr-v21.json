@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.dermatrace.app-mergeDebugResources-36:/values-ldltr-v21/values-ldltr-v21.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\manik\\.gradle\\caches\\8.13\\transforms\\076b40c9797417ecd297ca99df7fa5db\\transformed\\appcompat-1.7.0\\res\\values-ldltr-v21\\values-ldltr-v21.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "112",
+                        "endOffsets": "163"
+                    }
+                }
+            ]
+        }
+    ]
+}

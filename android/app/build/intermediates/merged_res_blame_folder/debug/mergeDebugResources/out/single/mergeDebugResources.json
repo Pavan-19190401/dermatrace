@@ -1,0 +1,74 @@
+[
+    {
+        "merged": "com.dermatrace.app-debug-38:/drawable_bg_reticle_circle.xml.flat",
+        "source": "com.dermatrace.app-main-40:/drawable/bg_reticle_circle.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/drawable_bg_clay_pill_button.xml.flat",
+        "source": "com.dermatrace.app-main-40:/drawable/bg_clay_pill_button.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/layout_activity_registry.xml.flat",
+        "source": "com.dermatrace.app-main-40:/layout/activity_registry.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/drawable_bg_clay_safe.xml.flat",
+        "source": "com.dermatrace.app-main-40:/drawable/bg_clay_safe.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/layout_activity_metrics.xml.flat",
+        "source": "com.dermatrace.app-main-40:/layout/activity_metrics.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/drawable_bg_shutter_button.xml.flat",
+        "source": "com.dermatrace.app-main-40:/drawable/bg_shutter_button.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/layout_activity_compare.xml.flat",
+        "source": "com.dermatrace.app-main-40:/layout/activity_compare.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/layout_item_patient.xml.flat",
+        "source": "com.dermatrace.app-main-40:/layout/item_patient.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/drawable_bg_skeuo_card.xml.flat",
+        "source": "com.dermatrace.app-main-40:/drawable/bg_skeuo_card.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/drawable_bg_pill_guidance.xml.flat",
+        "source": "com.dermatrace.app-main-40:/drawable/bg_pill_guidance.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/drawable_bg_clay_card.xml.flat",
+        "source": "com.dermatrace.app-main-40:/drawable/bg_clay_card.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/layout_activity_camera.xml.flat",
+        "source": "com.dermatrace.app-main-40:/layout/activity_camera.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/layout_activity_main.xml.flat",
+        "source": "com.dermatrace.app-main-40:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/drawable_bg_clay_urgent.xml.flat",
+        "source": "com.dermatrace.app-main-40:/drawable/bg_clay_urgent.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/drawable_bg_clay_input.xml.flat",
+        "source": "com.dermatrace.app-main-40:/drawable/bg_clay_input.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/layout_activity_login.xml.flat",
+        "source": "com.dermatrace.app-main-40:/layout/activity_login.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/drawable_bg_clay_warning.xml.flat",
+        "source": "com.dermatrace.app-main-40:/drawable/bg_clay_warning.xml"
+    },
+    {
+        "merged": "com.dermatrace.app-debug-38:/layout_activity_patient_dashboard.xml.flat",
+        "source": "com.dermatrace.app-main-40:/layout/activity_patient_dashboard.xml"
+    }
+]

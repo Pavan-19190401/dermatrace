@@ -27,17 +27,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupRoleToggle() {
         binding.btnToggleRole.setOnClickListener {
-            // Toggle between Patient ("client") and Clinician ("admin")
-            if (ApiClient.activeRole == "client") {
-                ApiClient.activeRole = "admin"
-                ApiClient.currentUserEmail = "admin@dermatrace.com"
-                Toast.makeText(this, "🩺 Switched to Clinician Workstation", Toast.LENGTH_SHORT).show()
-            } else {
-                ApiClient.activeRole = "client"
-                ApiClient.currentUserEmail = "patient@dermatrace.com"
-                Toast.makeText(this, "👤 Switched to Patient View", Toast.LENGTH_SHORT).show()
-            }
-            applyRoleUI()
+            // Logout and return to Login Screen
+            ApiClient.authToken = null
+            ApiClient.activeRole = "client"
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
         }
     }
 
