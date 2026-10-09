@@ -26,12 +26,36 @@ async def guard(req: Request, call_next):
     return r
 ROOT = os.path.join(os.path.dirname(__file__), "..", "..", "frontend")
 
-def user(authorization: str = Header(default="")):
-    uid = auth.read_token(authorization.removeprefix("Bearer ").strip())
-    if not uid: raise HTTPException(401, "Invalid or expired token")
-    return uid
+def user_info(authorization: str = Header(default="")):
+    data = auth.read_token_data(authorization.removeprefix("Bearer ").strip())
+    if not data: raise HTTPException(401, "Invalid or expired token")
+    return data
 
-class Cred(BaseModel): email: str = Field(min_length=5, max_length=120); password: str = Field(min_length=8, max_length=128)
+def user(data: dict = Depends(user_info)):
+    return data["uid"]
+
+def admin_only(data: dict = Depends(user_info)):
+    if data.get("role") != "admin":
+        raise HTTPException(403, "Admin privileges required")
+    return data["uid"]
+
+def seed_admin():
+    try:
+        with db.conn() as k:
+            r = k.execute("SELECT id FROM users WHERE email=?", ("admin@dermatrace.com",)).fetchone()
+            if not r:
+                k.execute("INSERT INTO users(email,pw,role,created) VALUES(?,?,?,?)",
+                          ("admin@dermatrace.com", auth.hash_pw("admin1234"), "admin", time.time()))
+    except Exception:
+        pass
+
+seed_admin()
+
+class Cred(BaseModel):
+    email: str = Field(min_length=5, max_length=120)
+    password: str = Field(min_length=8, max_length=128)
+    role: Optional[str] = "client"
+
 class LesionIn(BaseModel): name: str = Field(min_length=1, max_length=80); site: str = ""
 class VisitIn(BaseModel): image: str; taken: Optional[float] = None; note: str = ""; sens: float = .5; fov: float = 40
 class CmpIn(BaseModel):
@@ -51,18 +75,44 @@ def pipeline_eda():
 def pipeline_metrics():
     return pipeline.get_model_metrics()
 
+@app.get("/api/auth/me")
+def me(info: dict = Depends(user_info)):
+    with db.conn() as k:
+        r = k.execute("SELECT id, email, role FROM users WHERE id=?", (info["uid"],)).fetchone()
+    if not r: raise HTTPException(404, "User not found")
+    return {"id": r["id"], "email": r["email"], "role": r.get("role", "client")}
+
 @app.post("/api/auth/register")
 def register(c: Cred):
+    role = "admin" if (c.role == "admin" or "admin" in c.email.lower()) else "client"
     try:
-        with db.conn() as k: uid = k.execute("INSERT INTO users(email,pw,created) VALUES(?,?,?)", (c.email.lower(), auth.hash_pw(c.password), time.time())).lastrowid
-    except Exception: raise HTTPException(409, "Email already registered")
-    return {"token": auth.make_token(uid)}
+        with db.conn() as k:
+            uid = k.execute("INSERT INTO users(email,pw,role,created) VALUES(?,?,?,?)",
+                            (c.email.lower(), auth.hash_pw(c.password), role, time.time())).lastrowid
+    except Exception:
+        raise HTTPException(409, "Email already registered")
+    return {"token": auth.make_token(uid, role), "role": role, "email": c.email.lower()}
 
 @app.post("/api/auth/login")
 def login(c: Cred):
-    with db.conn() as k: r = k.execute("SELECT * FROM users WHERE email=?", (c.email.lower(),)).fetchone()
-    if not r or not auth.check_pw(c.password, r["pw"]): raise HTTPException(401, "Wrong email or password")
-    return {"token": auth.make_token(r["id"])}
+    with db.conn() as k:
+        r = k.execute("SELECT * FROM users WHERE email=?", (c.email.lower(),)).fetchone()
+    if not r or not auth.check_pw(c.password, r["pw"]):
+        raise HTTPException(401, "Wrong email or password")
+    role = r.get("role") or ("admin" if "admin" in r["email"].lower() else "client")
+    return {"token": auth.make_token(r["id"], role), "role": role, "email": r["email"]}
+
+@app.get("/api/admin/patients")
+def admin_patients(admin_id: int = Depends(admin_only)):
+    with db.conn() as k:
+        rows = k.execute("""
+            SELECT l.id, l.name, l.site, l.created, u.email as patient_email,
+                   (SELECT COUNT(*) FROM visits WHERE lesion_id=l.id) as visits_count
+            FROM lesions l
+            JOIN users u ON u.id = l.user_id
+            ORDER BY l.id DESC
+        """).fetchall()
+    return [dict(r) for r in rows]
 
 def own(k, uid, lid):
     r = k.execute("SELECT * FROM lesions WHERE id=? AND user_id=?", (lid, uid)).fetchone()

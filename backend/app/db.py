@@ -112,6 +112,7 @@ def init():
                 id SERIAL PRIMARY KEY,
                 email VARCHAR(255) UNIQUE NOT NULL,
                 pw TEXT NOT NULL,
+                role VARCHAR(32) DEFAULT 'client',
                 created DOUBLE PRECISION
             );
             CREATE TABLE IF NOT EXISTS lesions(
@@ -140,11 +141,19 @@ def init():
                 created DOUBLE PRECISION
             );
             """)
+            try:
+                c.execute("ALTER TABLE users ADD COLUMN role VARCHAR(32) DEFAULT 'client';")
+            except Exception:
+                pass
     else:
         with conn() as c:
             c.executescript("""
-            CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, email TEXT UNIQUE NOT NULL, pw TEXT NOT NULL, created REAL);
+            CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, email TEXT UNIQUE NOT NULL, pw TEXT NOT NULL, role TEXT DEFAULT 'client', created REAL);
             CREATE TABLE IF NOT EXISTS lesions(id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, name TEXT NOT NULL, site TEXT, created REAL);
             CREATE TABLE IF NOT EXISTS visits(id INTEGER PRIMARY KEY, lesion_id INTEGER NOT NULL REFERENCES lesions(id) ON DELETE CASCADE, file TEXT NOT NULL, taken REAL, metrics TEXT, note TEXT);
             CREATE TABLE IF NOT EXISTS results(id INTEGER PRIMARY KEY, lesion_id INTEGER, visit_a INTEGER, visit_b INTEGER, score INTEGER, verdict INTEGER, conf INTEGER, created REAL);
             """)
+            try:
+                c.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'client';")
+            except Exception:
+                pass

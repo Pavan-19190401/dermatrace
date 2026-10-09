@@ -22,9 +22,9 @@ def check_pw(pw, stored):
     s, _ = stored.split("$")
     return hmac.compare_digest(hash_pw(pw, unb64(s)), stored)
 
-def make_token(uid, ttl=7 * 86400):
+def make_token(uid, role="client", ttl=7 * 86400):
     h = b64(json.dumps({"alg": "HS256", "typ": "JWT"}).encode())
-    p = b64(json.dumps({"sub": uid, "exp": int(time.time()) + ttl}).encode())
+    p = b64(json.dumps({"sub": uid, "role": role, "exp": int(time.time()) + ttl}).encode())
     return f"{h}.{p}.{b64(hmac.new(SECRET, f'{h}.{p}'.encode(), hashlib.sha256).digest())}"
 
 def read_token(tok):
@@ -34,5 +34,15 @@ def read_token(tok):
             return None
         d = json.loads(unb64(p))
         return d["sub"] if d["exp"] > time.time() else None
+    except Exception:
+        return None
+
+def read_token_data(tok):
+    try:
+        h, p, s = tok.split(".")
+        if not hmac.compare_digest(s, b64(hmac.new(SECRET, f"{h}.{p}".encode(), hashlib.sha256).digest())):
+            return None
+        d = json.loads(unb64(p))
+        return {"uid": d["sub"], "role": d.get("role", "client")} if d["exp"] > time.time() else None
     except Exception:
         return None

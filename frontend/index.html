@@ -156,7 +156,7 @@ html, body {
 
 /* Skeuomorphic Header */
 header {
-  padding: 8px 20px 10px;
+  padding: 8px 18px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -168,7 +168,7 @@ header {
 }
 .brand-title h1 {
   margin: 0;
-  font-size: 21px;
+  font-size: 20px;
   font-weight: 800;
   letter-spacing: -0.5px;
   color: var(--text-main);
@@ -177,13 +177,13 @@ header {
   gap: 7px;
 }
 .brand-title small {
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.6px;
   color: var(--ac);
   text-transform: uppercase;
 }
-.header-actions { display: flex; gap: 8px; align-items: center; }
+.header-actions { display: flex; gap: 7px; align-items: center; }
 
 /* Skeuomorphic Buttons & Pills */
 .sk-btn {
@@ -224,8 +224,8 @@ header {
 }
 
 .sk-btn-icon {
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   padding: 0;
   display: grid;
@@ -341,8 +341,8 @@ header {
 
 /* Risk Chips */
 .chip {
-  padding: 4px 11px;
-  border-radius: 12px;
+  padding: 5px 12px;
+  border-radius: 14px;
   font-size: 11.5px;
   font-weight: 800;
   letter-spacing: 0.2px;
@@ -610,7 +610,7 @@ nav {
   bottom: 14px;
   transform: translateX(-50%) translateZ(60px);
   display: flex;
-  gap: 5px;
+  gap: 6px;
   padding: 8px 10px;
   border-radius: 34px;
   background: var(--card);
@@ -625,8 +625,8 @@ nav {
 nav button {
   border: 0;
   background: none;
-  width: 68px;
-  padding: 8px 0 6px;
+  min-width: 66px;
+  padding: 8px 6px 6px;
   border-radius: 24px;
   color: var(--text-muted);
   font: 700 10px 'Plus Jakarta Sans', inherit;
@@ -638,8 +638,8 @@ nav button {
   gap: 3px;
 }
 nav button svg {
-  width: 21px;
-  height: 21px;
+  width: 20px;
+  height: 20px;
   stroke: currentColor;
   fill: none;
   stroke-width: 2;
@@ -765,10 +765,11 @@ input, select {
     <!-- App Header -->
     <header>
       <div class="brand-title">
-        <h1>DermaTrace</h1>
-        <small>Longitudinal Skin Lesion Monitor</small>
+        <h1 id="brand-header-title">DermaTrace</h1>
+        <small id="app-mode-subtitle">Patient Skin Health Monitor</small>
       </div>
       <div class="header-actions">
+        <button class="chip ok" id="role-badge-btn" style="border:0;cursor:pointer;font-size:11px;padding:5px 11px" onclick="toggleRoleSwitchModal()">👤 Patient</button>
         <button class="sk-btn sk-btn-icon" id="btn-spatial" title="Toggle 3D Spatial Tilt" onclick="toggleSpatial()">🪞</button>
         <button class="sk-btn sk-btn-icon" id="btn-theme" title="Toggle Light/Dark Theme" onclick="toggleTheme()">◐</button>
       </div>
@@ -787,7 +788,7 @@ input, select {
 
 <script>
 /* ==========================================================================
-   DERMATRACE FRONT-END CONTROLLER & STATE
+   DERMATRACE FRONT-END CONTROLLER & ROLE-BASED ACCESS
    ========================================================================== */
 const $ = sel => document.querySelector(sel);
 const el = tag => document.createElement(tag);
@@ -842,25 +843,59 @@ function toast(msg) {
   setTimeout(() => t.remove(), 2600);
 }
 
-// Icons
+// Navigation Icons
 const NAV_ICONS = {
   home: '<path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/>',
   scan: '<path d="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3"/><circle cx="12" cy="12" r="3.5"/>',
   cmp: '<path d="M12 3v18M4 7h5M15 17h5"/><rect x="3" y="4" width="18" height="16" rx="3"/>',
   analytics: '<path d="M18 20V10M12 20V4M6 20v-6"/>',
-  set: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>'
+  set: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
+  profile: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'
 };
 
-const TABS = [
-  ['home', 'Home'],
-  ['scan', 'Scan'],
-  ['cmp', 'Compare'],
-  ['analytics', 'Analytics'],
-  ['set', 'Console']
-];
+// Role-Based Navigation Tabs
+function getRoleTabs() {
+  if (API.isAdmin()) {
+    // Clinician / Admin Experience: All features unlocked
+    return [
+      ['home', 'Registry'],
+      ['scan', 'Scan'],
+      ['cmp', 'Compare'],
+      ['analytics', 'ML & EDA'],
+      ['set', 'Console']
+    ];
+  } else {
+    // Patient / Client Experience: Focused, user-friendly triage
+    // Unwanted technical features (ML curves, 8 cleaning steps, raw DSP dials) are hidden!
+    return [
+      ['home', 'Home'],
+      ['scan', 'Scan'],
+      ['cmp', 'Compare'],
+      ['profile', 'Profile']
+    ];
+  }
+}
+
+function updateHeaderUI() {
+  const isAdmin = API.isAdmin();
+  const badgeBtn = $('#role-badge-btn');
+  const subTitle = $('#app-mode-subtitle');
+  if (badgeBtn) {
+    badgeBtn.className = `chip ${isAdmin ? 'bad' : 'ok'}`;
+    badgeBtn.innerHTML = isAdmin ? '🩺 Clinician (Admin)' : '👤 Patient (Client)';
+  }
+  if (subTitle) {
+    subTitle.textContent = isAdmin ? 'Clinical Triage & ML Workstation' : 'Personal Skin Lesion Monitor';
+  }
+}
 
 function renderNav() {
-  $('#bottom-nav').innerHTML = TABS.map(([k, l]) => `
+  updateHeaderUI();
+  const tabs = getRoleTabs();
+  if (!tabs.some(([k]) => k === App.tab)) {
+    App.tab = 'home';
+  }
+  $('#bottom-nav').innerHTML = tabs.map(([k, l]) => `
     <button class="${App.tab === k ? 'on' : ''}" onclick="switchTab('${k}')">
       <svg viewBox="0 0 24 24">${NAV_ICONS[k]}</svg>
       <span>${l}</span>
@@ -952,13 +987,11 @@ async function extractMetrics(src) {
 }
 
 async function compareVisits(a, b) {
-  // Try server Siamese CNN first
   try {
     const res = await API.cmp(a, b, App.cfg);
     if (res && res.score !== undefined) return res;
   } catch (e) {}
 
-  // Transparent on-device ABCDE + pixel change heuristic fallback
   const n = App.cfg.mode === 'Fast' ? 32 : (App.cfg.mode === 'Slow' ? 72 : 48);
   const [ia, ib] = await Promise.all([loadImage(a.img), loadImage(b.img)]);
   const da = getPixels(ia, n), db = getPixels(ib, n);
@@ -1120,6 +1153,47 @@ function uploadImageFile(file) {
 }
 
 /* ==========================================================================
+   ROLE SWITCHING MODAL (CLIENT VS ADMIN)
+   ========================================================================== */
+function toggleRoleSwitchModal() {
+  $('#modal-role')?.remove();
+  const modal = el('div');
+  modal.className = 'modal-overlay';
+  modal.id = 'modal-role';
+  modal.innerHTML = `
+    <div class="modal-sheet">
+      <div class="row sp" style="margin-bottom:12px">
+        <h2 style="margin:0;font-size:18px;font-weight:800">Role Access Control</h2>
+        <span class="chip ${API.isAdmin() ? 'bad' : 'ok'}">${API.isAdmin() ? 'Admin Active' : 'Patient Active'}</span>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 14px;line-height:1.5">
+        DermaTrace separates <b>Patient (Client)</b> triage from the <b>Clinician (Admin)</b> workstation.
+      </p>
+
+      <div class="sk-well" style="font-size:12px;margin-bottom:12px">
+        <b>👤 Patient (Client) Mode:</b><br>
+        Clean, reassuring view for personal spot checks. Hides technical ML curves, 8-step data cleaning schemas, and sensor calibration knobs.
+      </div>
+      <div class="sk-well" style="font-size:12px;margin-bottom:14px">
+        <b>🩺 Clinician (Admin) Mode:</b><br>
+        Full clinical workstation with multi-patient registry, Slide 1 & 2 ML analytics, confusion matrices, and tactile calibration dials.
+      </div>
+
+      <div class="row" style="margin-bottom:12px">
+        <button class="sk-btn ${!API.isAdmin() ? 'pri' : ''}" style="flex:1;font-size:12px" onclick="$('#modal-role').remove();API.quickDemoLogin('client')">
+          👤 Switch to Patient
+        </button>
+        <button class="sk-btn ${API.isAdmin() ? 'pri' : ''}" style="flex:1;font-size:12px" onclick="$('#modal-role').remove();API.quickDemoLogin('admin')">
+          🩺 Switch to Clinician
+        </button>
+      </div>
+      <button class="sk-btn" style="width:100%" onclick="$('#modal-role').remove()">Close</button>
+    </div>
+  `;
+  document.body.append(modal);
+}
+
+/* ==========================================================================
    SYNTHETIC CLINICAL DEMO LESIONS
    ========================================================================== */
 function generateSyntheticLesion(radius, irregularity, darkColor, phase) {
@@ -1171,7 +1245,7 @@ const formatDate = ts => {
 };
 
 /* ==========================================================================
-   VIEW RENDERERS
+   VIEW RENDERERS (CLIENT VS ADMIN)
    ========================================================================== */
 async function renderView() {
   const container = $('#main-view');
@@ -1180,12 +1254,15 @@ async function renderView() {
   else if (App.tab === 'cmp') renderCompare(container);
   else if (App.tab === 'analytics') renderAnalytics(container);
   else if (App.tab === 'set') renderConsole(container);
+  else if (App.tab === 'profile') renderProfile(container);
 }
 
-// ---------------------------
-// 1. HOME VIEW
-// ---------------------------
+// ----------------------------------------------------
+// 1. HOME VIEW: CLIENT (PATIENT) VS ADMIN (CLINICIAN)
+// ----------------------------------------------------
 async function renderHome(view) {
+  const isAdmin = API.isAdmin();
+
   const evaluations = await Promise.all(App.lesions.map(async l => {
     if (l.visits.length < 2) return null;
     return compareVisits(l.visits[0], l.visits[l.visits.length - 1]);
@@ -1193,91 +1270,149 @@ async function renderHome(view) {
   const flaggedCount = evaluations.filter(e => e && e.v === 1).length;
   const totalVisits = App.lesions.reduce((acc, l) => acc + l.visits.length, 0);
 
-  view.innerHTML = `
-    <!-- Institutional Attribution Banner -->
-    <div class="inst-badge">
-      <div style="font-size:24px">🎓</div>
-      <div style="font-size:11.5px;color:var(--text-muted);line-height:1.4">
-        <b>CMR Institute of Technology, Hyderabad</b><br>
-        Dept. of CSE (AI & ML) · Team 1 · Guide: Ms. M. Bhavani
-      </div>
-    </div>
+  if (isAdmin) {
+    // ------------------------------------------------
+    // ADMIN / CLINICIAN REGISTRY VIEW
+    // ------------------------------------------------
+    const adminPatients = await API.getAdminPatients();
 
-    <!-- Overview Card -->
-    <div class="sk-card">
-      <div class="row sp">
-        <div>
-          <h2 style="margin:0 0 4px;font-size:18px;font-weight:800">Longitudinal Triage</h2>
-          <span style="font-size:12px;color:var(--text-muted)">Tracking morphological evolution</span>
-        </div>
-        <div class="status-pill">
-          <div class="status-dot"></div>
-          <span>Siamese CNN</span>
+    view.innerHTML = `
+      <div class="inst-badge">
+        <div style="font-size:24px">🩺</div>
+        <div style="font-size:11.5px;color:var(--text-muted);line-height:1.4">
+          <b>CMRIT Clinical Triage Workstation</b><br>
+          Dept. of CSE (AI & ML) · Team 1 · Guide: Ms. M. Bhavani
         </div>
       </div>
-      <div class="g3" style="margin-top:14px">
-        <div class="stat-tile">
-          <span class="stat-val">${App.lesions.length}</span>
-          <span class="stat-label">Lesions</span>
-        </div>
-        <div class="stat-tile">
-          <span class="stat-val">${totalVisits}</span>
-          <span class="stat-label">Visits</span>
-        </div>
-        <div class="stat-tile">
-          <span class="stat-val" style="color:${flaggedCount ? 'var(--bad)' : 'var(--ok)'}">${flaggedCount}</span>
-          <span class="stat-label">Flagged</span>
-        </div>
-      </div>
-    </div>
 
-    <!-- Lesion Records List -->
-    <div class="row sp" style="margin:16px 4px 8px">
-      <h3 style="margin:0;font-size:15px;font-weight:800">Tracked Lesions</h3>
-      <span style="font-size:11px;font-weight:700;color:var(--text-muted)">${App.lesions.length} Registered</span>
-    </div>
-
-    ${App.lesions.length ? App.lesions.map((l, idx) => {
-      const ev = evaluations[idx];
-      const latest = l.visits[l.visits.length - 1];
-      return `
-        <div class="les-item" onclick="App.sel=${l.id};switchTab('${l.visits.length > 1 ? 'cmp' : 'scan'}')">
-          ${latest ? `<img class="les-thumb" src="${latest.img}">` : '<div class="les-thumb"></div>'}
-          <div style="flex:1">
-            <b style="font-size:14px">${l.name}</b>
-            <div style="font-size:12px;color:var(--text-muted)">
-              ${l.site} · ${l.visits.length} visit${l.visits.length === 1 ? '' : 's'}${latest ? ' · ' + formatDate(latest.t) : ''}
-            </div>
+      <div class="sk-card">
+        <div class="row sp">
+          <div>
+            <h2 style="margin:0 0 4px;font-size:18px;font-weight:800">Clinical Patient Registry</h2>
+            <span style="font-size:12px;color:var(--text-muted)">Registry-wide longitudinal triage</span>
           </div>
-          ${ev ? `<span class="chip ${VERDICTS[ev.v][1]}">${VERDICTS[ev.v][0]}</span>` : '<span class="chip wa">Baseline</span>'}
+          <span class="chip bad">Admin Unlocked</span>
         </div>
-      `;
-    }).join('') : `
-      <div class="sk-card" style="text-align:center;padding:28px 16px">
-        <div style="font-size:36px;margin-bottom:8px">🩺</div>
-        <b style="font-size:15px">No lesion records registered</b>
-        <p style="font-size:12px;color:var(--text-muted);margin:6px 0 16px">
-          Capture baseline dermoscopic photos via phone camera or explore with our clinical demo.
-        </p>
-        <button class="sk-btn pri" style="margin-right:8px" onclick="switchTab('scan')">＋ New Scan</button>
-        <button class="sk-btn" onclick="loadClinicalDemo()">Load Demo</button>
+        <div class="g3" style="margin-top:14px">
+          <div class="stat-tile">
+            <span class="stat-val">${adminPatients.length || App.lesions.length}</span>
+            <span class="stat-label">Total Cases</span>
+          </div>
+          <div class="stat-tile">
+            <span class="stat-val">${totalVisits}</span>
+            <span class="stat-label">Visits</span>
+          </div>
+          <div class="stat-tile">
+            <span class="stat-val" style="color:${flaggedCount ? 'var(--bad)' : 'var(--ok)'}">${flaggedCount}</span>
+            <span class="stat-label">High-Risk</span>
+          </div>
+        </div>
       </div>
-    `}
 
-    <div class="row" style="margin-top:14px">
-      <button class="sk-btn pri" style="flex:1" onclick="switchTab('scan')">＋ New Scan</button>
-      <button class="sk-btn" style="flex:1" onclick="loadClinicalDemo()">Load Demo</button>
-    </div>
+      <div class="row sp" style="margin:16px 4px 8px">
+        <h3 style="margin:0;font-size:15px;font-weight:800">Active Lesion Records</h3>
+        <span class="chip ok">${App.lesions.length} Loaded</span>
+      </div>
 
-    <p style="text-align:center;font-size:11px;color:var(--text-dim);margin:20px 8px 0;line-height:1.5">
-      Clinical decision-support triage aid — <b>NOT a diagnostic system</b>. Consult a board-certified dermatologist for medical diagnosis.
-    </p>
-  `;
+      ${App.lesions.length ? App.lesions.map((l, idx) => {
+        const ev = evaluations[idx];
+        const latest = l.visits[l.visits.length - 1];
+        return `
+          <div class="les-item" onclick="App.sel=${l.id};switchTab('cmp')">
+            ${latest ? `<img class="les-thumb" src="${latest.img}">` : '<div class="les-thumb"></div>'}
+            <div style="flex:1">
+              <b style="font-size:14px">${l.name}</b>
+              <div style="font-size:12px;color:var(--text-muted)">
+                ${l.site} · ${l.visits.length} visit${l.visits.length === 1 ? '' : 's'}${latest ? ' · ' + formatDate(latest.t) : ''}
+              </div>
+            </div>
+            ${ev ? `<span class="chip ${VERDICTS[ev.v][1]}">${VERDICTS[ev.v][0]}</span>` : '<span class="chip wa">Baseline</span>'}
+          </div>
+        `;
+      }).join('') : `
+        <div class="sk-card" style="text-align:center;padding:24px 16px">
+          <b style="font-size:14px">No clinical records loaded</b><br>
+          <button class="sk-btn pri" style="margin-top:12px" onclick="loadClinicalDemo()">Load Demo Data</button>
+        </div>
+      `}
+
+      <div class="row" style="margin-top:14px">
+        <button class="sk-btn pri" style="flex:1" onclick="switchTab('scan')">＋ Acquire Scan</button>
+        <button class="sk-btn" style="flex:1" onclick="switchTab('analytics')">📊 ML Analytics</button>
+      </div>
+    `;
+  } else {
+    // ------------------------------------------------
+    // PATIENT / CLIENT VIEW: FOCUSED & EMPATHETIC
+    // ------------------------------------------------
+    view.innerHTML = `
+      <div class="sk-card">
+        <div class="row sp">
+          <div>
+            <h2 style="margin:0 0 4px;font-size:19px;font-weight:800">My Skin Health</h2>
+            <span style="font-size:12px;color:var(--text-muted)">Track your spots over time</span>
+          </div>
+          <span class="chip ok">👤 Patient View</span>
+        </div>
+        <div class="g2" style="margin-top:14px">
+          <div class="stat-tile">
+            <span class="stat-val">${App.lesions.length}</span>
+            <span class="stat-label">Tracked Spots</span>
+          </div>
+          <div class="stat-tile">
+            <span class="stat-val">${totalVisits}</span>
+            <span class="stat-label">Recorded Checks</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row sp" style="margin:16px 4px 8px">
+        <h3 style="margin:0;font-size:15px;font-weight:800">My Tracked Spots</h3>
+        <span style="font-size:11.5px;color:var(--text-muted)">${App.lesions.length} Registered</span>
+      </div>
+
+      ${App.lesions.length ? App.lesions.map((l, idx) => {
+        const ev = evaluations[idx];
+        const latest = l.visits[l.visits.length - 1];
+        return `
+          <div class="les-item" onclick="App.sel=${l.id};switchTab('${l.visits.length > 1 ? 'cmp' : 'scan'}')">
+            ${latest ? `<img class="les-thumb" src="${latest.img}">` : '<div class="les-thumb"></div>'}
+            <div style="flex:1">
+              <b style="font-size:14px">${l.name}</b>
+              <div style="font-size:12px;color:var(--text-muted)">
+                ${l.site} · ${l.visits.length} check${l.visits.length === 1 ? '' : 's'}${latest ? ' · ' + formatDate(latest.t) : ''}
+              </div>
+            </div>
+            ${ev ? `<span class="chip ${VERDICTS[ev.v][1]}">${VERDICTS[ev.v][0]}</span>` : '<span class="chip wa">Baseline</span>'}
+          </div>
+        `;
+      }).join('') : `
+        <div class="sk-card" style="text-align:center;padding:28px 16px">
+          <div style="font-size:38px;margin-bottom:8px">📸</div>
+          <b style="font-size:15px">You haven't tracked any spots yet</b>
+          <p style="font-size:12px;color:var(--text-muted);margin:6px 0 16px">
+            Take a clear photo of any mole or skin spot you want to monitor over time.
+          </p>
+          <button class="sk-btn pri" style="margin-right:8px" onclick="switchTab('scan')">＋ Track My First Spot</button>
+          <button class="sk-btn" onclick="loadClinicalDemo()">Try Sample Demo</button>
+        </div>
+      `}
+
+      <div class="row" style="margin-top:14px">
+        <button class="sk-btn pri" style="flex:1" onclick="switchTab('scan')">＋ New Spot Scan</button>
+        <button class="sk-btn" style="flex:1" onclick="loadClinicalDemo()">Try Sample</button>
+      </div>
+
+      <div class="sk-well" style="margin-top:20px;font-size:11.5px;line-height:1.5;color:var(--text-muted)">
+        💡 <b>Patient Note:</b> DermaTrace is an AI-assisted self-monitoring guide, not a final medical diagnosis. If any mole itches, bleeds, hurts, or rapidly grows, always schedule an in-person dermatology check.
+      </div>
+    `;
+  }
 }
 
-// ---------------------------
+// ----------------------------------------------------
 // 2. SCAN & CAPTURE VIEW
-// ---------------------------
+// ----------------------------------------------------
 function renderScan(view) {
   const l = getActiveLesion();
   const ghostVisit = App.cfg.ghost && l?.visits.length ? l.visits[l.visits.length - 1] : null;
@@ -1285,23 +1420,23 @@ function renderScan(view) {
   view.innerHTML = `
     <!-- Lesion Selector & Creator -->
     <div class="sk-card">
-      <h3 style="margin:0 0 10px;font-size:15px;font-weight:800">1 · Select or Register Lesion</h3>
+      <h3 style="margin:0 0 10px;font-size:15px;font-weight:800">1 · Choose or Add Spot</h3>
       ${App.lesions.length ? `
         <select onchange="App.sel=+this.value;saveState();renderView()">
-          ${App.lesions.map(x => `<option value="${x.id}" ${l && x.id === l.id ? 'selected' : ''}>${x.name} (${x.visits.length} visits)</option>`).join('')}
+          ${App.lesions.map(x => `<option value="${x.id}" ${l && x.id === l.id ? 'selected' : ''}>${x.name} (${x.visits.length} checks)</option>`).join('')}
         </select>
       ` : ''}
       <div class="row">
-        <input id="input-les-name" placeholder="Lesion name (e.g. Right shoulder nevus)">
-        <input id="input-les-site" placeholder="Body site (e.g. Shoulder)" style="width:130px">
+        <input id="input-les-name" placeholder="Name (e.g. Forearm mole)">
+        <input id="input-les-site" placeholder="Body site (e.g. Arm)" style="width:130px">
       </div>
-      <button class="sk-btn" style="width:100%" onclick="addLesion()">Save Lesion</button>
+      <button class="sk-btn" style="width:100%" onclick="addLesion()">Save Spot</button>
     </div>
 
     <!-- Capture Viewfinder -->
     <div class="sk-card">
       <div class="row sp" style="margin-bottom:10px">
-        <h3 style="margin:0;font-size:15px;font-weight:800">2 · Capture Dermoscopic Photo</h3>
+        <h3 style="margin:0;font-size:15px;font-weight:800">2 · Capture Photo</h3>
         ${App.camStream ? '<span class="status-pill"><span class="status-dot"></span>LIVE</span>' : ''}
       </div>
 
@@ -1310,7 +1445,7 @@ function renderScan(view) {
           <video id="cam-video" autoplay playsinline muted></video>
           ${ghostVisit ? `<img class="ghost-layer" id="ghost-img" src="${ghostVisit.img}" style="opacity:${App.ghostOpacity}">` : ''}
           ${App.cfg.ring ? '<div class="reticle-ring"><div class="reticle-crosshair"></div></div>' : ''}
-          <div class="cam-hud-label">${ghostVisit ? 'Align with ghost of prior visit' : 'Center mole in reticle'}</div>
+          <div class="cam-hud-label">${ghostVisit ? 'Align with ghost of prior photo' : 'Center mole inside circle'}</div>
         ` : `
           <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#8891a0;gap:12px">
             <div style="font-size:48px">📷</div>
@@ -1322,7 +1457,7 @@ function renderScan(view) {
 
       ${ghostVisit ? `
         <div class="row sp" style="margin-top:10px">
-          <span style="font-size:11.5px;font-weight:700;color:var(--text-muted)">Ghost Overlay Opacity</span>
+          <span style="font-size:11.5px;font-weight:700;color:var(--text-muted)">Ghost Alignment Opacity</span>
           <input type="range" min="0" max="1" step="0.05" value="${App.ghostOpacity}" style="width:140px;margin:0" oninput="App.ghostOpacity=+this.value;$('#ghost-img')&&($('#ghost-img').style.opacity=this.value)">
         </div>
       ` : ''}
@@ -1348,29 +1483,30 @@ function renderScan(view) {
 function addLesion() {
   const name = $('#input-les-name').value.trim();
   const site = $('#input-les-site').value.trim();
-  if (!name) return toast('Please provide a lesion name');
+  if (!name) return toast('Please provide a name for this spot');
   const id = Date.now();
   App.lesions.push({ id, name, site: site || 'Unspecified', visits: [] });
   App.sel = id;
   saveState();
-  toast(`Registered: ${name}`);
+  toast(`Saved: ${name}`);
   renderView();
 }
 
-// ---------------------------
+// ----------------------------------------------------
 // 3. COMPARE & EVOLUTION VIEW (SLIDE 1 & 3)
-// ---------------------------
+// ----------------------------------------------------
 async function renderCompare(view) {
+  const isAdmin = API.isAdmin();
   const l = getActiveLesion();
   if (!l || l.visits.length < 2) {
     view.innerHTML = `
       <div class="sk-card" style="text-align:center;padding:32px 18px">
         <div style="font-size:42px;margin-bottom:10px">⚖️</div>
-        <h2 style="margin:0 0 6px">Two Visits Required</h2>
+        <h2 style="margin:0 0 6px">Two Checks Needed</h2>
         <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 18px">
-          DermaTrace evaluates longitudinal evolution (the 'E' criterion in ABCDE). Capture at least 2 visits of the same lesion.
+          DermaTrace checks for evolution over time. Please capture at least 2 photos of this spot at different dates.
         </p>
-        <button class="sk-btn pri" style="margin-right:8px" onclick="switchTab('scan')">Capture Visit</button>
+        <button class="sk-btn pri" style="margin-right:8px" onclick="switchTab('scan')">Capture Photo</button>
         <button class="sk-btn" onclick="loadClinicalDemo()">Try Demo</button>
       </div>
     `;
@@ -1387,7 +1523,7 @@ async function renderCompare(view) {
   const comp = await compareVisits(visitA, visitB);
 
   const optVisits = selIdx => l.visits.map((v, i) => `
-    <option value="${i}" ${i === selIdx ? 'selected' : ''}>Visit ${i + 1} (${formatDate(v.t)})</option>
+    <option value="${i}" ${i === selIdx ? 'selected' : ''}>Check ${i + 1} (${formatDate(v.t)})</option>
   `).join('');
 
   const names = { A: 'Asymmetry', B: 'Border Irregularity', C: 'Colour Variance', D: 'Diameter', E: 'Evolution' };
@@ -1403,7 +1539,7 @@ async function renderCompare(view) {
     <!-- Lesion & Visits Picker -->
     <div class="sk-card">
       <div class="row sp" style="margin-bottom:8px">
-        <h3 style="margin:0;font-size:15px;font-weight:800">Longitudinal Pair</h3>
+        <h3 style="margin:0;font-size:15px;font-weight:800">Longitudinal Comparison</h3>
         <span class="status-pill">${comp.engine}</span>
       </div>
       <select onchange="App.sel=+this.value;App.a=0;App.b=1;renderView()">
@@ -1421,8 +1557,8 @@ async function renderCompare(view) {
         <div class="cmp-handle" id="cmp-drag" style="left:calc(50% - 2px)"></div>
       </div>
       <div class="row sp" style="font-size:11.5px;font-weight:700;color:var(--text-muted);margin-top:8px">
-        <span>◀ Baseline: ${formatDate(visitA.t)}</span>
-        <span>Follow-up: ${formatDate(visitB.t)} ▶</span>
+        <span>◀ Baseline (${formatDate(visitA.t)})</span>
+        <span>Latest (${formatDate(visitB.t)}) ▶</span>
       </div>
     </div>
 
@@ -1445,7 +1581,7 @@ async function renderCompare(view) {
         </svg>
       </div>
 
-      <!-- 3-Way Risk Prediction Banner (from PPT Slide 1) -->
+      <!-- 3-Way Risk Recommendation Banner -->
       <div style="margin-top:6px">
         <span class="chip ${VERDICTS[comp.v][1]}" style="font-size:15px;padding:8px 20px">
           ${VERDICTS[comp.v][0]}
@@ -1454,18 +1590,19 @@ async function renderCompare(view) {
       <p style="font-size:13px;font-weight:600;margin:10px 8px 6px;line-height:1.4">
         ${comp.r}
       </p>
-      ${comp.risk !== null && comp.risk !== undefined ? `
-        <div style="font-size:12px;color:var(--text-muted);margin-top:4px">
-          MobileNetV2 Malignancy Probability: <b>${Math.round(comp.risk * 100)}%</b>
+
+      ${isAdmin && comp.risk !== null && comp.risk !== undefined ? `
+        <div class="sk-well" style="font-size:11.5px;color:var(--text-muted);margin-top:8px">
+          <b>Admin Diagnostic:</b> MobileNetV2 P(mel|bcc|akiec) = <b>${(comp.risk * 100).toFixed(1)}%</b> | Thr: 50%
         </div>
       ` : ''}
     </div>
 
-    <!-- ABCDE Criteria Breakdown (Slide 1 & 3) -->
+    <!-- ABCDE Criteria Breakdown -->
     <div class="sk-card">
       <div class="row sp" style="margin-bottom:12px">
         <h3 style="margin:0;font-size:15px;font-weight:800">ABCDE Criteria Breakdown</h3>
-        <span style="font-size:11px;color:var(--text-muted)">Evolution Delta</span>
+        <span style="font-size:11px;color:var(--text-muted)">Morphological Changes</span>
       </div>
       ${Object.keys(names).map(k => `
         <div style="margin-bottom:12px">
@@ -1485,8 +1622,8 @@ async function renderCompare(view) {
     <!-- Action Buttons -->
     <div class="row" style="margin-top:6px">
       <button class="sk-btn" style="flex:1" onclick="copyReport(${comp.score}, '${VERDICTS[comp.v][0]}', '${l.name}')">📋 Copy</button>
-      <button class="sk-btn pri" style="flex:1" onclick="API.pdf(l, App.a, App.b)">📄 PDF Report</button>
-      <button class="sk-btn" style="color:var(--bad)" onclick="deleteLesion(${l.id})">🗑 Delete</button>
+      <button class="sk-btn pri" style="flex:1" onclick="API.pdf(l, App.a, App.b)">📄 Download PDF</button>
+      ${isAdmin ? `<button class="sk-btn" style="color:var(--bad)" onclick="deleteLesion(${l.id})">🗑 Delete</button>` : ''}
     </div>
   `;
 
@@ -1507,12 +1644,12 @@ async function renderCompare(view) {
 }
 
 function copyReport(score, verdict, name) {
-  const text = `DermaTrace Clinical Triage Report\nLesion: ${name}\nEvolution Change Score: ${score}/100\nRisk Recommendation: ${verdict}\nDate: ${formatDate(Date.now())}\nNote: Clinical decision-support aid. Not a diagnostic system.`;
+  const text = `DermaTrace Clinical Triage Report\nLesion: ${name}\nEvolution Change Score: ${score}/100\nRecommendation: ${verdict}\nDate: ${formatDate(Date.now())}\nNote: Triage aid only. Show to your dermatologist.`;
   navigator.clipboard.writeText(text).then(() => toast('Summary copied to clipboard')).catch(() => toast(text));
 }
 
 function deleteLesion(id) {
-  if (confirm('Delete this lesion and all its associated visits?')) {
+  if (confirm('Delete this record?')) {
     App.lesions = App.lesions.filter(l => l.id !== id);
     App.sel = null;
     saveState();
@@ -1520,10 +1657,24 @@ function deleteLesion(id) {
   }
 }
 
-// ---------------------------
-// 4. ANALYTICS & PIPELINE VIEW (SLIDES 1 & 2)
-// ---------------------------
+// ----------------------------------------------------
+// 4. ML & EDA ANALYTICS VIEW (ADMIN ONLY)
+// ----------------------------------------------------
 async function renderAnalytics(view) {
+  if (!API.isAdmin()) {
+    view.innerHTML = `
+      <div class="sk-card" style="text-align:center;padding:32px 16px">
+        <div style="font-size:38px;margin-bottom:8px">🔒</div>
+        <h2 style="margin:0 0 6px">Clinician Portal</h2>
+        <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 16px">
+          Technical ML evaluation metrics, dataset EDA, and confusion matrices are restricted to authorized Clinicians and ML Engineers.
+        </p>
+        <button class="sk-btn pri" onclick="toggleRoleSwitchModal()">Switch to Clinician Mode</button>
+      </div>
+    `;
+    return;
+  }
+
   view.innerHTML = `
     <!-- Top Sub-Navigation (Slide 1 vs Slide 2) -->
     <div class="seg-tabs">
@@ -1711,10 +1862,24 @@ async function renderCleaningTab(container) {
   `;
 }
 
-// ---------------------------
-// 5. CONSOLE & CALIBRATION VIEW
-// ---------------------------
+// ----------------------------------------------------
+// 5. CONSOLE & CALIBRATION VIEW (ADMIN ONLY)
+// ----------------------------------------------------
 function renderConsole(view) {
+  if (!API.isAdmin()) {
+    view.innerHTML = `
+      <div class="sk-card" style="text-align:center;padding:32px 16px">
+        <div style="font-size:38px;margin-bottom:8px">🔒</div>
+        <h2 style="margin:0 0 6px">Hardware Console Restricted</h2>
+        <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 16px">
+          Tactile rotary hardware calibration knobs and DSP filters are reserved for administrative staff.
+        </p>
+        <button class="sk-btn pri" onclick="toggleRoleSwitchModal()">Switch to Clinician Mode</button>
+      </div>
+    `;
+    return;
+  }
+
   const c = App.cfg;
   view.innerHTML = `
     <!-- Device Rotary Dials -->
@@ -1764,7 +1929,7 @@ function renderConsole(view) {
     </div>
 
     <!-- User Account / Cloud Sync -->
-    ${API.card()}
+    ${API.authCard()}
 
     <!-- Institutional Accreditation -->
     <div class="sk-card" style="font-size:12px;line-height:1.5">
@@ -1776,7 +1941,7 @@ function renderConsole(view) {
       <b>Dept:</b> Computer Science & Engineering (AI & ML)<br>
       <b>Team 1:</b> T. Prem Kumar (23R01A66B8), V. Manikanta Pavan (23R01A66C5), J. Tharun (23R01A6687)<br>
       <b>Guide:</b> Ms. M. Bhavani, Asso. Professor, CSE (AI&ML), CMRIT<br>
-      <button class="sk-btn" style="width:100%;margin-top:14px;color:var(--bad)" onclick="if(confirm('Clear all local lesion records?')){App.lesions=[];saveState();switchTab('home')}">Erase All Local Data</button>
+      <button class="sk-btn" style="width:100%;margin-top:14px;color:var(--bad)" onclick="if(confirm('Clear all local records?')){App.lesions=[];saveState();switchTab('home')}">Erase All Local Data</button>
     </div>
   `;
 
@@ -1799,6 +1964,42 @@ function renderConsole(view) {
     };
     k.onpointerup = () => { k.onpointermove = null; saveState(); };
   });
+}
+
+// ----------------------------------------------------
+// 6. PATIENT PROFILE VIEW (CLIENT ONLY)
+// ----------------------------------------------------
+function renderProfile(view) {
+  view.innerHTML = `
+    <!-- Patient Account Card -->
+    ${API.authCard()}
+
+    <!-- Check-up Reminders -->
+    <div class="sk-card">
+      <div class="row sp" style="margin-bottom:8px">
+        <h3 style="margin:0;font-size:15px;font-weight:800">Check-up Schedule</h3>
+        <span class="chip ok">Active</span>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 10px">
+        Regular self-checks help detect dangerous lesion evolution early.
+      </p>
+      <div class="row sp">
+        <span style="font-weight:700;font-size:12.5px">Remind me every:</span>
+        <select style="width:130px;margin:0" onchange="App.cfg.days=+this.value;saveState();toast('Reminder updated')">
+          ${[14, 30, 60, 90].map(d => `<option value="${d}" ${App.cfg.days === d ? 'selected' : ''}>${d} days</option>`).join('')}
+        </select>
+      </div>
+    </div>
+
+    <!-- Clinician Switcher Callout -->
+    <div class="sk-card" style="text-align:center;padding:20px 16px">
+      <b style="font-size:14px">Are you a Dermatologist or Researcher?</b>
+      <p style="font-size:12px;color:var(--text-muted);margin:6px 0 14px">
+        Access the full clinical workstation with multi-patient registries, ML confusion matrices, and sensor calibrations.
+      </p>
+      <button class="sk-btn pri" style="width:100%" onclick="API.quickDemoLogin('admin')">🩺 Open Clinician Workstation (Admin)</button>
+    </div>
+  `;
 }
 
 /* ==========================================================================
